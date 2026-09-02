@@ -1,0 +1,2291 @@
+[
+  {
+    "best_validation": {
+      "benchmark_mean": 0.06012532483326875,
+      "epoch": 2,
+      "iteration": 200,
+      "per_class": [
+        0.06012532483326875
+      ],
+      "per_patient": [
+        [
+          0.05670776946634925
+        ],
+        [
+          0.06354288020018826
+        ]
+      ],
+      "prediction_fg_fraction": 0.35442433458693484
+    },
+    "der": null,
+    "derpp": null,
+    "evaluated": {
+      "A": {
+        "benchmark_mean": 0.08790635522513096,
+        "per_class": [
+          0.08790635522513096
+        ],
+        "per_patient": [
+          [
+            0.10860536251431768
+          ],
+          [
+            0.08851756391091475
+          ],
+          [
+            0.06659613925016043
+          ]
+        ],
+        "prediction_fg_fraction": 0.33267478337363593
+      },
+      "B": {
+        "benchmark_mean": 0.0819770493838259,
+        "per_class": [
+          0.0819770493838259
+        ],
+        "per_patient": [
+          [
+            0.07894232407307455
+          ],
+          [
+            0.05163856825613191
+          ],
+          [
+            0.11535025582227122
+          ]
+        ],
+        "prediction_fg_fraction": 0.35609796312120223
+      },
+      "C": {
+        "benchmark_mean": 0.12935602073281785,
+        "per_class": [
+          0.12935602073281785
+        ],
+        "per_patient": [
+          [
+            0.09637022496699797
+          ],
+          [
+            0.1423525666077825
+          ],
+          [
+            0.15465643849829275
+          ],
+          [
+            0.10539636694154704
+          ],
+          [
+            0.13826910216604696
+          ],
+          [
+            0.19101118363793648
+          ],
+          [
+            0.11122313211346002
+          ],
+          [
+            0.09556915093047906
+          ]
+        ],
+        "prediction_fg_fraction": 0.3168399665929094
+      },
+      "D": {
+        "benchmark_mean": 0.03775919840301914,
+        "per_class": [
+          0.03775919840301914
+        ],
+        "per_patient": [
+          [
+            0.03803694745284208
+          ],
+          [
+            0.0073359556374902445
+          ],
+          [
+            0.06746553949767616
+          ],
+          [
+            0.03819835102406807
+          ]
+        ],
+        "prediction_fg_fraction": 0.3068939208984375
+      },
+      "E": {
+        "benchmark_mean": 0.09466660251285514,
+        "per_class": [
+          0.09466660251285514
+        ],
+        "per_patient": [
+          [
+            0.06835625881751861
+          ],
+          [
+            0.07254488603936332
+          ],
+          [
+            0.14967433991611684
+          ],
+          [
+            0.07023888917494102
+          ],
+          [
+            0.10712476944211709
+          ],
+          [
+            0.0474571691267425
+          ],
+          [
+            0.14171247074973817
+          ],
+          [
+            0.10022403683630347
+          ]
+        ],
+        "prediction_fg_fraction": 0.3304328618087168
+      },
+      "F": {
+        "benchmark_mean": 0.04916650636483213,
+        "per_class": [
+          0.04916650636483213
+        ],
+        "per_patient": [
+          [
+            0.04565032044341846
+          ],
+          [
+            0.07122501523750722
+          ],
+          [
+            0.04919166492230646
+          ],
+          [
+            0.02838059572227034
+          ],
+          [
+            0.05138493549865817
+          ]
+        ],
+        "prediction_fg_fraction": 0.3576679706573486
+      }
+    },
+    "fisher": null,
+    "gpm": {
+      "examples": 16,
+      "layers": [
+        {
+          "input_dimension": 9,
+          "layer": "backbone.Conv1.conv.0",
+          "patches": 4096,
+          "rank_added": 3,
+          "rank_after": 3,
+          "rank_before": 0,
+          "retained_energy": 0.9790256023406982
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 23,
+          "rank_after": 23,
+          "rank_before": 0,
+          "retained_energy": 0.9704212546348572
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv2.conv.0",
+          "patches": 4096,
+          "rank_added": 37,
+          "rank_after": 37,
+          "rank_before": 0,
+          "retained_energy": 0.9710339903831482
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 36,
+          "rank_after": 36,
+          "rank_before": 0,
+          "retained_energy": 0.9701609015464783
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv3.conv.0",
+          "patches": 3472,
+          "rank_added": 18,
+          "rank_after": 18,
+          "rank_before": 0,
+          "retained_energy": 0.970400333404541
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 18,
+          "rank_after": 18,
+          "rank_before": 0,
+          "retained_energy": 0.9712882041931152
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv4.conv.0",
+          "patches": 1736,
+          "rank_added": 17,
+          "rank_after": 17,
+          "rank_before": 0,
+          "retained_energy": 0.9714263081550598
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv4.conv.3",
+          "patches": 868,
+          "rank_added": 27,
+          "rank_after": 27,
+          "rank_before": 0,
+          "retained_energy": 0.9708704352378845
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv5.conv.0",
+          "patches": 868,
+          "rank_added": 39,
+          "rank_after": 39,
+          "rank_before": 0,
+          "retained_energy": 0.970728874206543
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Conv5.conv.3",
+          "patches": 434,
+          "rank_added": 91,
+          "rank_after": 91,
+          "rank_before": 0,
+          "retained_energy": 0.9700308442115784
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Up4.up.1",
+          "patches": 434,
+          "rank_added": 181,
+          "rank_after": 181,
+          "rank_before": 0,
+          "retained_energy": 0.9702708721160889
+        },
+        {
+          "input_dimension": 4644,
+          "layer": "backbone.Up_conv4.conv.0",
+          "patches": 861,
+          "rank_added": 46,
+          "rank_after": 46,
+          "rank_before": 0,
+          "retained_energy": 0.9704771041870117
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up_conv4.conv.3",
+          "patches": 868,
+          "rank_added": 49,
+          "rank_after": 49,
+          "rank_before": 0,
+          "retained_energy": 0.9705514311790466
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up3.up.1",
+          "patches": 868,
+          "rank_added": 73,
+          "rank_after": 73,
+          "rank_before": 0,
+          "retained_energy": 0.9702474474906921
+        },
+        {
+          "input_dimension": 2340,
+          "layer": "backbone.Up_conv3.conv.0",
+          "patches": 1709,
+          "rank_added": 19,
+          "rank_after": 19,
+          "rank_before": 0,
+          "retained_energy": 0.971031129360199
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 21,
+          "rank_after": 21,
+          "rank_before": 0,
+          "retained_energy": 0.971763014793396
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up2.up.1",
+          "patches": 1736,
+          "rank_added": 25,
+          "rank_after": 25,
+          "rank_before": 0,
+          "retained_energy": 0.9702609777450562
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv2.conv.0",
+          "patches": 1736,
+          "rank_added": 28,
+          "rank_after": 28,
+          "rank_before": 0,
+          "retained_energy": 0.9706593751907349
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 15,
+          "rank_after": 15,
+          "rank_before": 0,
+          "retained_energy": 0.9703465104103088
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up1.up.1",
+          "patches": 3472,
+          "rank_added": 14,
+          "rank_after": 14,
+          "rank_before": 0,
+          "retained_energy": 0.9719255566596985
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv1.conv.0",
+          "patches": 3472,
+          "rank_added": 40,
+          "rank_after": 40,
+          "rank_before": 0,
+          "retained_energy": 0.9706254005432129
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Up_conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 15,
+          "rank_after": 15,
+          "rank_before": 0,
+          "retained_energy": 0.9702354669570923
+        }
+      ],
+      "stage": 0,
+      "state_bytes": 16268796,
+      "task": "A",
+      "threshold": 0.97
+    },
+    "stage": 0
+  },
+  {
+    "best_validation": {
+      "benchmark_mean": 0.060625343430448564,
+      "epoch": 52,
+      "iteration": 2200,
+      "per_class": [
+        0.060625343430448564
+      ],
+      "per_patient": [
+        [
+          0.043734812819161466
+        ],
+        [
+          0.07751587404173566
+        ]
+      ],
+      "prediction_fg_fraction": 0.27883370717366535
+    },
+    "der": null,
+    "derpp": null,
+    "evaluated": {
+      "A": {
+        "benchmark_mean": 0.09167014878514491,
+        "per_class": [
+          0.09167014878514491
+        ],
+        "per_patient": [
+          [
+            0.11640624098070781
+          ],
+          [
+            0.08921267865090148
+          ],
+          [
+            0.0693915267238255
+          ]
+        ],
+        "prediction_fg_fraction": 0.32636636400979663
+      },
+      "B": {
+        "benchmark_mean": 0.10066941611232132,
+        "per_class": [
+          0.10066941611232132
+        ],
+        "per_patient": [
+          [
+            0.09692397366963403
+          ],
+          [
+            0.06355036292367691
+          ],
+          [
+            0.14153391174365296
+          ]
+        ],
+        "prediction_fg_fraction": 0.28701421949598527
+      },
+      "C": {
+        "benchmark_mean": 0.14955977063966291,
+        "per_class": [
+          0.14955977063966291
+        ],
+        "per_patient": [
+          [
+            0.10517150659374352
+          ],
+          [
+            0.17761981693429896
+          ],
+          [
+            0.17095383494711963
+          ],
+          [
+            0.13443564985646325
+          ],
+          [
+            0.15878180146171467
+          ],
+          [
+            0.20419030669079022
+          ],
+          [
+            0.1443296773810269
+          ],
+          [
+            0.10099557125214619
+          ]
+        ],
+        "prediction_fg_fraction": 0.2778739446326147
+      },
+      "D": {
+        "benchmark_mean": 0.08035611811051212,
+        "per_class": [
+          0.08035611811051212
+        ],
+        "per_patient": [
+          [
+            0.10475991921569626
+          ],
+          [
+            0.07360113940139688
+          ],
+          [
+            0.077547859616447
+          ],
+          [
+            0.06551555420850835
+          ]
+        ],
+        "prediction_fg_fraction": 0.2672880554199219
+      },
+      "E": {
+        "benchmark_mean": 0.14809188428776265,
+        "per_class": [
+          0.14809188428776265
+        ],
+        "per_patient": [
+          [
+            0.08978713322456679
+          ],
+          [
+            0.09067855056428505
+          ],
+          [
+            0.2196473580411295
+          ],
+          [
+            0.09860061911874779
+          ],
+          [
+            0.25443406650086503
+          ],
+          [
+            0.07555871895618418
+          ],
+          [
+            0.16651945836541304
+          ],
+          [
+            0.18950916953090982
+          ]
+        ],
+        "prediction_fg_fraction": 0.27353145569328247
+      },
+      "F": {
+        "benchmark_mean": 0.060484656313019435,
+        "per_class": [
+          0.060484656313019435
+        ],
+        "per_patient": [
+          [
+            0.0575660998803322
+          ],
+          [
+            0.09268297512900671
+          ],
+          [
+            0.05810696517005121
+          ],
+          [
+            0.03463531465215947
+          ],
+          [
+            0.05943192673354761
+          ]
+        ],
+        "prediction_fg_fraction": 0.29088993072509767
+      }
+    },
+    "fisher": null,
+    "gpm": {
+      "examples": 16,
+      "layers": [
+        {
+          "input_dimension": 9,
+          "layer": "backbone.Conv1.conv.0",
+          "patches": 4096,
+          "rank_added": 0,
+          "rank_after": 3,
+          "rank_before": 3,
+          "retained_energy": 0.9808929562568665
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 22,
+          "rank_after": 45,
+          "rank_before": 23,
+          "retained_energy": 0.9710536599159241
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv2.conv.0",
+          "patches": 4096,
+          "rank_added": 12,
+          "rank_after": 49,
+          "rank_before": 37,
+          "retained_energy": 0.9716097712516785
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 15,
+          "rank_after": 51,
+          "rank_before": 36,
+          "retained_energy": 0.9714356660842896
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv3.conv.0",
+          "patches": 3472,
+          "rank_added": 4,
+          "rank_after": 22,
+          "rank_before": 18,
+          "retained_energy": 0.9722432494163513
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 3,
+          "rank_after": 21,
+          "rank_before": 18,
+          "retained_energy": 0.9720039367675781
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv4.conv.0",
+          "patches": 1736,
+          "rank_added": 2,
+          "rank_after": 19,
+          "rank_before": 17,
+          "retained_energy": 0.9711812734603882
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv4.conv.3",
+          "patches": 868,
+          "rank_added": 13,
+          "rank_after": 40,
+          "rank_before": 27,
+          "retained_energy": 0.9713330864906311
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv5.conv.0",
+          "patches": 868,
+          "rank_added": 24,
+          "rank_after": 63,
+          "rank_before": 39,
+          "retained_energy": 0.9716249704360962
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Conv5.conv.3",
+          "patches": 434,
+          "rank_added": 80,
+          "rank_after": 171,
+          "rank_before": 91,
+          "retained_energy": 0.9710142016410828
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Up4.up.1",
+          "patches": 434,
+          "rank_added": 142,
+          "rank_after": 323,
+          "rank_before": 181,
+          "retained_energy": 0.971159040927887
+        },
+        {
+          "input_dimension": 4644,
+          "layer": "backbone.Up_conv4.conv.0",
+          "patches": 861,
+          "rank_added": 27,
+          "rank_after": 73,
+          "rank_before": 46,
+          "retained_energy": 0.9714761972427368
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up_conv4.conv.3",
+          "patches": 868,
+          "rank_added": 30,
+          "rank_after": 79,
+          "rank_before": 49,
+          "retained_energy": 0.9711210131645203
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up3.up.1",
+          "patches": 868,
+          "rank_added": 64,
+          "rank_after": 137,
+          "rank_before": 73,
+          "retained_energy": 0.9710531234741211
+        },
+        {
+          "input_dimension": 2340,
+          "layer": "backbone.Up_conv3.conv.0",
+          "patches": 1709,
+          "rank_added": 7,
+          "rank_after": 26,
+          "rank_before": 19,
+          "retained_energy": 0.971617579460144
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 10,
+          "rank_after": 31,
+          "rank_before": 21,
+          "retained_energy": 0.9720796942710876
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up2.up.1",
+          "patches": 1736,
+          "rank_added": 8,
+          "rank_after": 33,
+          "rank_before": 25,
+          "retained_energy": 0.9714235663414001
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv2.conv.0",
+          "patches": 1736,
+          "rank_added": 13,
+          "rank_after": 41,
+          "rank_before": 28,
+          "retained_energy": 0.9711295962333679
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 14,
+          "rank_after": 29,
+          "rank_before": 15,
+          "retained_energy": 0.9717925786972046
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up1.up.1",
+          "patches": 3472,
+          "rank_added": 7,
+          "rank_after": 21,
+          "rank_before": 14,
+          "retained_energy": 0.9725863933563232
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv1.conv.0",
+          "patches": 3472,
+          "rank_added": 12,
+          "rank_after": 52,
+          "rank_before": 40,
+          "retained_energy": 0.9717218279838562
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Up_conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 6,
+          "rank_after": 21,
+          "rank_before": 15,
+          "retained_energy": 0.9718629717826843
+        }
+      ],
+      "stage": 1,
+      "state_bytes": 28097820,
+      "task": "B",
+      "threshold": 0.971
+    },
+    "stage": 1
+  },
+  {
+    "best_validation": {
+      "benchmark_mean": 0.3014225753412964,
+      "epoch": 2,
+      "iteration": 200,
+      "per_class": [
+        0.3014225753412964
+      ],
+      "per_patient": [
+        [
+          0.5156081351693546
+        ],
+        [
+          0.1826539437909894
+        ],
+        [
+          0.24972383321517314
+        ],
+        [
+          0.25770438918966854
+        ]
+      ],
+      "prediction_fg_fraction": 0.27253397623697917
+    },
+    "der": null,
+    "derpp": null,
+    "evaluated": {
+      "A": {
+        "benchmark_mean": 0.0974352086659855,
+        "per_class": [
+          0.0974352086659855
+        ],
+        "per_patient": [
+          [
+            0.12682420402442343
+          ],
+          [
+            0.09350447624985928
+          ],
+          [
+            0.07197694572367379
+          ]
+        ],
+        "prediction_fg_fraction": 0.2898987058609251
+      },
+      "B": {
+        "benchmark_mean": 0.12980113172455612,
+        "per_class": [
+          0.12980113172455612
+        ],
+        "per_patient": [
+          [
+            0.1255629956999552
+          ],
+          [
+            0.08594292955817619
+          ],
+          [
+            0.17789746991553704
+          ]
+        ],
+        "prediction_fg_fraction": 0.20089827643500435
+      },
+      "C": {
+        "benchmark_mean": 0.16440420682764068,
+        "per_class": [
+          0.16440420682764068
+        ],
+        "per_patient": [
+          [
+            0.10541352318649544
+          ],
+          [
+            0.19515922880403738
+          ],
+          [
+            0.1849601994783737
+          ],
+          [
+            0.15591902436428454
+          ],
+          [
+            0.18186636796814618
+          ],
+          [
+            0.22800828159481
+          ],
+          [
+            0.16147338700025138
+          ],
+          [
+            0.10243364222472669
+          ]
+        ],
+        "prediction_fg_fraction": 0.2536097659340388
+      },
+      "D": {
+        "benchmark_mean": 0.0914619176948086,
+        "per_class": [
+          0.0914619176948086
+        ],
+        "per_patient": [
+          [
+            0.11390843964289009
+          ],
+          [
+            0.08533209783492593
+          ],
+          [
+            0.08758288667362651
+          ],
+          [
+            0.07902424662779191
+          ]
+        ],
+        "prediction_fg_fraction": 0.2507388305664062
+      },
+      "E": {
+        "benchmark_mean": 0.1819469449412904,
+        "per_class": [
+          0.1819469449412904
+        ],
+        "per_patient": [
+          [
+            0.12110162472095848
+          ],
+          [
+            0.12069629649960877
+          ],
+          [
+            0.2704914884457356
+          ],
+          [
+            0.1191789922605122
+          ],
+          [
+            0.31158180686848536
+          ],
+          [
+            0.1042212625078298
+          ],
+          [
+            0.2095575367927239
+          ],
+          [
+            0.19874655143446912
+          ]
+        ],
+        "prediction_fg_fraction": 0.21292642908772147
+      },
+      "F": {
+        "benchmark_mean": 0.06477736321970701,
+        "per_class": [
+          0.06477736321970701
+        ],
+        "per_patient": [
+          [
+            0.05795047185299815
+          ],
+          [
+            0.10119053810978375
+          ],
+          [
+            0.06138237736172792
+          ],
+          [
+            0.044933123806839025
+          ],
+          [
+            0.0584303049671862
+          ]
+        ],
+        "prediction_fg_fraction": 0.24811573028564454
+      }
+    },
+    "fisher": null,
+    "gpm": {
+      "examples": 16,
+      "layers": [
+        {
+          "input_dimension": 9,
+          "layer": "backbone.Conv1.conv.0",
+          "patches": 4096,
+          "rank_added": 0,
+          "rank_after": 3,
+          "rank_before": 3,
+          "retained_energy": 0.9768685102462769
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 27,
+          "rank_after": 72,
+          "rank_before": 45,
+          "retained_energy": 0.972515344619751
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv2.conv.0",
+          "patches": 4096,
+          "rank_added": 15,
+          "rank_after": 64,
+          "rank_before": 49,
+          "retained_energy": 0.9722965359687805
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 25,
+          "rank_after": 76,
+          "rank_before": 51,
+          "retained_energy": 0.9721448421478271
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv3.conv.0",
+          "patches": 3472,
+          "rank_added": 8,
+          "rank_after": 30,
+          "rank_before": 22,
+          "retained_energy": 0.9726064205169678
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 11,
+          "rank_after": 32,
+          "rank_before": 21,
+          "retained_energy": 0.9722702503204346
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv4.conv.0",
+          "patches": 1736,
+          "rank_added": 8,
+          "rank_after": 27,
+          "rank_before": 19,
+          "retained_energy": 0.9731645584106445
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv4.conv.3",
+          "patches": 868,
+          "rank_added": 29,
+          "rank_after": 69,
+          "rank_before": 40,
+          "retained_energy": 0.9722883105278015
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv5.conv.0",
+          "patches": 868,
+          "rank_added": 43,
+          "rank_after": 106,
+          "rank_before": 63,
+          "retained_energy": 0.9720597863197327
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Conv5.conv.3",
+          "patches": 434,
+          "rank_added": 131,
+          "rank_after": 302,
+          "rank_before": 171,
+          "retained_energy": 0.9722304940223694
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Up4.up.1",
+          "patches": 434,
+          "rank_added": 218,
+          "rank_after": 541,
+          "rank_before": 323,
+          "retained_energy": 0.9721476435661316
+        },
+        {
+          "input_dimension": 4644,
+          "layer": "backbone.Up_conv4.conv.0",
+          "patches": 861,
+          "rank_added": 49,
+          "rank_after": 122,
+          "rank_before": 73,
+          "retained_energy": 0.9723371863365173
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up_conv4.conv.3",
+          "patches": 868,
+          "rank_added": 60,
+          "rank_after": 139,
+          "rank_before": 79,
+          "retained_energy": 0.9723268151283264
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up3.up.1",
+          "patches": 868,
+          "rank_added": 107,
+          "rank_after": 244,
+          "rank_before": 137,
+          "retained_energy": 0.9721959829330444
+        },
+        {
+          "input_dimension": 2340,
+          "layer": "backbone.Up_conv3.conv.0",
+          "patches": 1709,
+          "rank_added": 11,
+          "rank_after": 37,
+          "rank_before": 26,
+          "retained_energy": 0.9722603559494019
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 18,
+          "rank_after": 49,
+          "rank_before": 31,
+          "retained_energy": 0.9721186757087708
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up2.up.1",
+          "patches": 1736,
+          "rank_added": 21,
+          "rank_after": 54,
+          "rank_before": 33,
+          "retained_energy": 0.9725591540336609
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv2.conv.0",
+          "patches": 1736,
+          "rank_added": 14,
+          "rank_after": 55,
+          "rank_before": 41,
+          "retained_energy": 0.9720385074615479
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 13,
+          "rank_after": 42,
+          "rank_before": 29,
+          "retained_energy": 0.9725750088691711
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up1.up.1",
+          "patches": 3472,
+          "rank_added": 7,
+          "rank_after": 28,
+          "rank_before": 21,
+          "retained_energy": 0.9723815321922302
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv1.conv.0",
+          "patches": 3472,
+          "rank_added": 18,
+          "rank_after": 70,
+          "rank_before": 52,
+          "retained_energy": 0.9721641540527344
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Up_conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 7,
+          "rank_after": 28,
+          "rank_before": 21,
+          "retained_energy": 0.9725971221923828
+        }
+      ],
+      "stage": 2,
+      "state_bytes": 47485404,
+      "task": "C",
+      "threshold": 0.972
+    },
+    "stage": 2
+  },
+  {
+    "best_validation": {
+      "benchmark_mean": 0.13190866353561775,
+      "epoch": 9,
+      "iteration": 400,
+      "per_class": [
+        0.13190866353561775
+      ],
+      "per_patient": [
+        [
+          0.11766599219541907
+        ],
+        [
+          0.1461513348758164
+        ]
+      ],
+      "prediction_fg_fraction": 0.2511282700758714
+    },
+    "der": null,
+    "derpp": null,
+    "evaluated": {
+      "A": {
+        "benchmark_mean": 0.10727350606084222,
+        "per_class": [
+          0.10727350606084222
+        ],
+        "per_patient": [
+          [
+            0.13843482753919484
+          ],
+          [
+            0.0942327898061131
+          ],
+          [
+            0.08915290083721869
+          ]
+        ],
+        "prediction_fg_fraction": 0.24236091734871032
+      },
+      "B": {
+        "benchmark_mean": 0.1349732564364803,
+        "per_class": [
+          0.1349732564364803
+        ],
+        "per_patient": [
+          [
+            0.11695949024608249
+          ],
+          [
+            0.09323329734574155
+          ],
+          [
+            0.1947269817176169
+          ]
+        ],
+        "prediction_fg_fraction": 0.16423267788357204
+      },
+      "C": {
+        "benchmark_mean": 0.17884302903433202,
+        "per_class": [
+          0.17884302903433202
+        ],
+        "per_patient": [
+          [
+            0.11206150154872332
+          ],
+          [
+            0.2016284813345852
+          ],
+          [
+            0.20387778242500962
+          ],
+          [
+            0.1861196263732494
+          ],
+          [
+            0.1891642608735993
+          ],
+          [
+            0.24723978543231667
+          ],
+          [
+            0.1899883037061053
+          ],
+          [
+            0.1006644905810672
+          ]
+        ],
+        "prediction_fg_fraction": 0.23245509666732594
+      },
+      "D": {
+        "benchmark_mean": 0.09979210663002602,
+        "per_class": [
+          0.09979210663002602
+        ],
+        "per_patient": [
+          [
+            0.11949737402848896
+          ],
+          [
+            0.08569213961660584
+          ],
+          [
+            0.09402172849867008
+          ],
+          [
+            0.09995718437633923
+          ]
+        ],
+        "prediction_fg_fraction": 0.2403291320800781
+      },
+      "E": {
+        "benchmark_mean": 0.2292021374798051,
+        "per_class": [
+          0.2292021374798051
+        ],
+        "per_patient": [
+          [
+            0.1323631607125199
+          ],
+          [
+            0.15141408341975907
+          ],
+          [
+            0.3367645867499442
+          ],
+          [
+            0.1446484146197553
+          ],
+          [
+            0.3968521671968951
+          ],
+          [
+            0.1448896455497231
+          ],
+          [
+            0.2548401993457985
+          ],
+          [
+            0.27184484224404565
+          ]
+        ],
+        "prediction_fg_fraction": 0.17404709463044415
+      },
+      "F": {
+        "benchmark_mean": 0.06679270699179062,
+        "per_class": [
+          0.06679270699179062
+        ],
+        "per_patient": [
+          [
+            0.05858788080315192
+          ],
+          [
+            0.10685116592271392
+          ],
+          [
+            0.06721016588287779
+          ],
+          [
+            0.04655974311034347
+          ],
+          [
+            0.054754579239866
+          ]
+        ],
+        "prediction_fg_fraction": 0.22770113945007325
+      }
+    },
+    "fisher": null,
+    "gpm": {
+      "examples": 16,
+      "layers": [
+        {
+          "input_dimension": 9,
+          "layer": "backbone.Conv1.conv.0",
+          "patches": 4096,
+          "rank_added": 0,
+          "rank_after": 3,
+          "rank_before": 3,
+          "retained_energy": 0.9852290749549866
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 1,
+          "rank_after": 73,
+          "rank_before": 72,
+          "retained_energy": 0.9739415645599365
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv2.conv.0",
+          "patches": 4096,
+          "rank_added": 1,
+          "rank_after": 65,
+          "rank_before": 64,
+          "retained_energy": 0.9740458130836487
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 1,
+          "rank_after": 77,
+          "rank_before": 76,
+          "retained_energy": 0.9734117388725281
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv3.conv.0",
+          "patches": 3472,
+          "rank_added": 0,
+          "rank_after": 30,
+          "rank_before": 30,
+          "retained_energy": 0.9745405912399292
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 1,
+          "rank_after": 33,
+          "rank_before": 32,
+          "retained_energy": 0.9762277007102966
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv4.conv.0",
+          "patches": 1736,
+          "rank_added": 1,
+          "rank_after": 28,
+          "rank_before": 27,
+          "retained_energy": 0.9768758416175842
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv4.conv.3",
+          "patches": 868,
+          "rank_added": 5,
+          "rank_after": 74,
+          "rank_before": 69,
+          "retained_energy": 0.9731558561325073
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv5.conv.0",
+          "patches": 868,
+          "rank_added": 20,
+          "rank_after": 126,
+          "rank_before": 106,
+          "retained_energy": 0.9734382033348083
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Conv5.conv.3",
+          "patches": 434,
+          "rank_added": 77,
+          "rank_after": 379,
+          "rank_before": 302,
+          "retained_energy": 0.97306227684021
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Up4.up.1",
+          "patches": 434,
+          "rank_added": 148,
+          "rank_after": 689,
+          "rank_before": 541,
+          "retained_energy": 0.9730092883110046
+        },
+        {
+          "input_dimension": 4644,
+          "layer": "backbone.Up_conv4.conv.0",
+          "patches": 861,
+          "rank_added": 19,
+          "rank_after": 141,
+          "rank_before": 122,
+          "retained_energy": 0.9730202555656433
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up_conv4.conv.3",
+          "patches": 868,
+          "rank_added": 28,
+          "rank_after": 167,
+          "rank_before": 139,
+          "retained_energy": 0.9733980894088745
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up3.up.1",
+          "patches": 868,
+          "rank_added": 46,
+          "rank_after": 290,
+          "rank_before": 244,
+          "retained_energy": 0.9731765985488892
+        },
+        {
+          "input_dimension": 2340,
+          "layer": "backbone.Up_conv3.conv.0",
+          "patches": 1709,
+          "rank_added": 3,
+          "rank_after": 40,
+          "rank_before": 37,
+          "retained_energy": 0.9734508991241455
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 10,
+          "rank_after": 59,
+          "rank_before": 49,
+          "retained_energy": 0.9739673733711243
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up2.up.1",
+          "patches": 1736,
+          "rank_added": 9,
+          "rank_after": 63,
+          "rank_before": 54,
+          "retained_energy": 0.9731372594833374
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv2.conv.0",
+          "patches": 1736,
+          "rank_added": 3,
+          "rank_after": 58,
+          "rank_before": 55,
+          "retained_energy": 0.9737083315849304
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 6,
+          "rank_after": 48,
+          "rank_before": 42,
+          "retained_energy": 0.9730282425880432
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up1.up.1",
+          "patches": 3472,
+          "rank_added": 3,
+          "rank_after": 31,
+          "rank_before": 28,
+          "retained_energy": 0.9735901355743408
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv1.conv.0",
+          "patches": 3472,
+          "rank_added": 0,
+          "rank_after": 70,
+          "rank_before": 70,
+          "retained_energy": 0.9755849838256836
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Up_conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 1,
+          "rank_after": 29,
+          "rank_before": 28,
+          "retained_energy": 0.9746535420417786
+        }
+      ],
+      "stage": 3,
+      "state_bytes": 58259772,
+      "task": "D",
+      "threshold": 0.973
+    },
+    "stage": 3
+  },
+  {
+    "best_validation": {
+      "benchmark_mean": 0.08407875114560216,
+      "epoch": 1,
+      "iteration": 200,
+      "per_class": [
+        0.08407875114560216
+      ],
+      "per_patient": [
+        [
+          0.12265103537975733
+        ],
+        [
+          0.07544169387563353
+        ],
+        [
+          0.07710183189269595
+        ],
+        [
+          0.06112044343432183
+        ]
+      ],
+      "prediction_fg_fraction": 0.26064511812650243
+    },
+    "der": null,
+    "derpp": null,
+    "evaluated": {
+      "A": {
+        "benchmark_mean": 0.07499131235780591,
+        "per_class": [
+          0.07499131235780591
+        ],
+        "per_patient": [
+          [
+            0.09936665799063045
+          ],
+          [
+            0.06911229368635596
+          ],
+          [
+            0.05649498539643133
+          ]
+        ],
+        "prediction_fg_fraction": 0.38861156645275297
+      },
+      "B": {
+        "benchmark_mean": 0.08501691653989664,
+        "per_class": [
+          0.08501691653989664
+        ],
+        "per_patient": [
+          [
+            0.07710477605438285
+          ],
+          [
+            0.057096476052702266
+          ],
+          [
+            0.12084949751260482
+          ]
+        ],
+        "prediction_fg_fraction": 0.3199549780951606
+      },
+      "C": {
+        "benchmark_mean": 0.13102880165549674,
+        "per_class": [
+          0.13102880165549674
+        ],
+        "per_patient": [
+          [
+            0.08730825661467372
+          ],
+          [
+            0.1453299394191201
+          ],
+          [
+            0.14812950569804756
+          ],
+          [
+            0.12710814714524257
+          ],
+          [
+            0.14293045218346556
+          ],
+          [
+            0.18479340619860227
+          ],
+          [
+            0.13403498902968072
+          ],
+          [
+            0.07859571695514127
+          ]
+        ],
+        "prediction_fg_fraction": 0.32518468929242483
+      },
+      "D": {
+        "benchmark_mean": 0.07482104078944346,
+        "per_class": [
+          0.07482104078944346
+        ],
+        "per_patient": [
+          [
+            0.09495140107428841
+          ],
+          [
+            0.06553817586126817
+          ],
+          [
+            0.06868621365826827
+          ],
+          [
+            0.07010837256394897
+          ]
+        ],
+        "prediction_fg_fraction": 0.3255616760253906
+      },
+      "E": {
+        "benchmark_mean": 0.1603395043706145,
+        "per_class": [
+          0.1603395043706145
+        ],
+        "per_patient": [
+          [
+            0.08902453756993607
+          ],
+          [
+            0.093884667768626
+          ],
+          [
+            0.23630774509382035
+          ],
+          [
+            0.09483544965224285
+          ],
+          [
+            0.29623073158980145
+          ],
+          [
+            0.08842475556053232
+          ],
+          [
+            0.16827742179919675
+          ],
+          [
+            0.21573072593076012
+          ]
+        ],
+        "prediction_fg_fraction": 0.2733362753560224
+      },
+      "F": {
+        "benchmark_mean": 0.05046254351552567,
+        "per_class": [
+          0.05046254351552567
+        ],
+        "per_patient": [
+          [
+            0.046525294024798776
+          ],
+          [
+            0.07801381937687012
+          ],
+          [
+            0.05016140534787224
+          ],
+          [
+            0.031563237511211255
+          ],
+          [
+            0.04604896131687597
+          ]
+        ],
+        "prediction_fg_fraction": 0.3348888397216797
+      }
+    },
+    "fisher": null,
+    "gpm": {
+      "examples": 16,
+      "layers": [
+        {
+          "input_dimension": 9,
+          "layer": "backbone.Conv1.conv.0",
+          "patches": 4096,
+          "rank_added": 1,
+          "rank_after": 4,
+          "rank_before": 3,
+          "retained_energy": 0.9794756174087524
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 18,
+          "rank_after": 91,
+          "rank_before": 73,
+          "retained_energy": 0.9745252728462219
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv2.conv.0",
+          "patches": 4096,
+          "rank_added": 11,
+          "rank_after": 76,
+          "rank_before": 65,
+          "retained_energy": 0.9744774103164673
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 16,
+          "rank_after": 93,
+          "rank_before": 77,
+          "retained_energy": 0.9741466641426086
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv3.conv.0",
+          "patches": 3472,
+          "rank_added": 4,
+          "rank_after": 34,
+          "rank_before": 30,
+          "retained_energy": 0.9740223288536072
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 6,
+          "rank_after": 39,
+          "rank_before": 33,
+          "retained_energy": 0.9746899008750916
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv4.conv.0",
+          "patches": 1736,
+          "rank_added": 5,
+          "rank_after": 33,
+          "rank_before": 28,
+          "retained_energy": 0.9741429686546326
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv4.conv.3",
+          "patches": 868,
+          "rank_added": 19,
+          "rank_after": 93,
+          "rank_before": 74,
+          "retained_energy": 0.9740623831748962
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv5.conv.0",
+          "patches": 868,
+          "rank_added": 35,
+          "rank_after": 161,
+          "rank_before": 126,
+          "retained_energy": 0.9741964936256409
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Conv5.conv.3",
+          "patches": 434,
+          "rank_added": 129,
+          "rank_after": 508,
+          "rank_before": 379,
+          "retained_energy": 0.9740716814994812
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Up4.up.1",
+          "patches": 434,
+          "rank_added": 211,
+          "rank_after": 900,
+          "rank_before": 689,
+          "retained_energy": 0.9740645885467529
+        },
+        {
+          "input_dimension": 4644,
+          "layer": "backbone.Up_conv4.conv.0",
+          "patches": 861,
+          "rank_added": 39,
+          "rank_after": 180,
+          "rank_before": 141,
+          "retained_energy": 0.9742698669433594
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up_conv4.conv.3",
+          "patches": 868,
+          "rank_added": 49,
+          "rank_after": 216,
+          "rank_before": 167,
+          "retained_energy": 0.9740870594978333
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up3.up.1",
+          "patches": 868,
+          "rank_added": 78,
+          "rank_after": 368,
+          "rank_before": 290,
+          "retained_energy": 0.9741920232772827
+        },
+        {
+          "input_dimension": 2340,
+          "layer": "backbone.Up_conv3.conv.0",
+          "patches": 1709,
+          "rank_added": 7,
+          "rank_after": 47,
+          "rank_before": 40,
+          "retained_energy": 0.9742447137832642
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 9,
+          "rank_after": 68,
+          "rank_before": 59,
+          "retained_energy": 0.9743507504463196
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up2.up.1",
+          "patches": 1736,
+          "rank_added": 15,
+          "rank_after": 78,
+          "rank_before": 63,
+          "retained_energy": 0.9740331172943115
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv2.conv.0",
+          "patches": 1736,
+          "rank_added": 11,
+          "rank_after": 69,
+          "rank_before": 58,
+          "retained_energy": 0.9742506742477417
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 12,
+          "rank_after": 60,
+          "rank_before": 48,
+          "retained_energy": 0.9744205474853516
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up1.up.1",
+          "patches": 3472,
+          "rank_added": 7,
+          "rank_after": 38,
+          "rank_before": 31,
+          "retained_energy": 0.9746813178062439
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv1.conv.0",
+          "patches": 3472,
+          "rank_added": 13,
+          "rank_after": 83,
+          "rank_before": 70,
+          "retained_energy": 0.9741469621658325
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Up_conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 4,
+          "rank_after": 33,
+          "rank_before": 29,
+          "retained_energy": 0.9746793508529663
+        }
+      ],
+      "stage": 4,
+      "state_bytes": 75659328,
+      "task": "E",
+      "threshold": 0.974
+    },
+    "stage": 4
+  },
+  {
+    "best_validation": {
+      "benchmark_mean": 0.08883329152637957,
+      "epoch": 11,
+      "iteration": 2000,
+      "per_class": [
+        0.08883329152637957
+      ],
+      "per_patient": [
+        [
+          0.10033533598713047
+        ],
+        [
+          0.05352126040519719
+        ],
+        [
+          0.11264327818681102
+        ]
+      ],
+      "prediction_fg_fraction": 0.28938762346903485
+    },
+    "der": null,
+    "derpp": null,
+    "evaluated": {
+      "A": {
+        "benchmark_mean": 0.09096634016934634,
+        "per_class": [
+          0.09096634016934634
+        ],
+        "per_patient": [
+          [
+            0.1180973397651722
+          ],
+          [
+            0.08790493060664382
+          ],
+          [
+            0.06689675013622298
+          ]
+        ],
+        "prediction_fg_fraction": 0.32953147282676093
+      },
+      "B": {
+        "benchmark_mean": 0.09486145275243306,
+        "per_class": [
+          0.09486145275243306
+        ],
+        "per_patient": [
+          [
+            0.08915586598316758
+          ],
+          [
+            0.05905658879631504
+          ],
+          [
+            0.13637190347781655
+          ]
+        ],
+        "prediction_fg_fraction": 0.30438677469889325
+      },
+      "C": {
+        "benchmark_mean": 0.14225752886818005,
+        "per_class": [
+          0.14225752886818005
+        ],
+        "per_patient": [
+          [
+            0.09543998494493894
+          ],
+          [
+            0.16215229204486417
+          ],
+          [
+            0.1645205853058219
+          ],
+          [
+            0.13312313816968843
+          ],
+          [
+            0.14896569011097313
+          ],
+          [
+            0.19973882764558573
+          ],
+          [
+            0.14569895465602414
+          ],
+          [
+            0.08842075806754399
+          ]
+        ],
+        "prediction_fg_fraction": 0.2974313663530953
+      },
+      "D": {
+        "benchmark_mean": 0.08718902186900901,
+        "per_class": [
+          0.08718902186900901
+        ],
+        "per_patient": [
+          [
+            0.11368930341427659
+          ],
+          [
+            0.08203386044405132
+          ],
+          [
+            0.07339047559158882
+          ],
+          [
+            0.07964244802611932
+          ]
+        ],
+        "prediction_fg_fraction": 0.27971038818359373
+      },
+      "E": {
+        "benchmark_mean": 0.1601913022740014,
+        "per_class": [
+          0.1601913022740014
+        ],
+        "per_patient": [
+          [
+            0.09217771820220301
+          ],
+          [
+            0.09414367381753926
+          ],
+          [
+            0.22625770076271315
+          ],
+          [
+            0.09913990458542607
+          ],
+          [
+            0.29896878057292947
+          ],
+          [
+            0.08555564497998412
+          ],
+          [
+            0.16746289440028655
+          ],
+          [
+            0.21782410087092963
+          ]
+        ],
+        "prediction_fg_fraction": 0.2725666076179564
+      },
+      "F": {
+        "benchmark_mean": 0.05822508936550702,
+        "per_class": [
+          0.05822508936550702
+        ],
+        "per_patient": [
+          [
+            0.05467095167077111
+          ],
+          [
+            0.0906884944252804
+          ],
+          [
+            0.05744640347456766
+          ],
+          [
+            0.03364078005817082
+          ],
+          [
+            0.05467881719874512
+          ]
+        ],
+        "prediction_fg_fraction": 0.30298385620117185
+      }
+    },
+    "fisher": null,
+    "gpm": {
+      "examples": 16,
+      "layers": [
+        {
+          "input_dimension": 9,
+          "layer": "backbone.Conv1.conv.0",
+          "patches": 4096,
+          "rank_added": 0,
+          "rank_after": 4,
+          "rank_before": 4,
+          "retained_energy": 0.9932068586349487
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 0,
+          "rank_after": 91,
+          "rank_before": 91,
+          "retained_energy": 0.9839208722114563
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Conv2.conv.0",
+          "patches": 4096,
+          "rank_added": 0,
+          "rank_after": 76,
+          "rank_before": 76,
+          "retained_energy": 0.9817563891410828
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 0,
+          "rank_after": 93,
+          "rank_before": 93,
+          "retained_energy": 0.9803117513656616
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Conv3.conv.0",
+          "patches": 3472,
+          "rank_added": 0,
+          "rank_after": 34,
+          "rank_before": 34,
+          "retained_energy": 0.9759356379508972
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 0,
+          "rank_after": 39,
+          "rank_before": 39,
+          "retained_energy": 0.9770606160163879
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Conv4.conv.0",
+          "patches": 1736,
+          "rank_added": 0,
+          "rank_after": 33,
+          "rank_before": 33,
+          "retained_energy": 0.9769585728645325
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv4.conv.3",
+          "patches": 868,
+          "rank_added": 6,
+          "rank_after": 99,
+          "rank_before": 93,
+          "retained_energy": 0.9754893779754639
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Conv5.conv.0",
+          "patches": 868,
+          "rank_added": 11,
+          "rank_after": 172,
+          "rank_before": 161,
+          "retained_energy": 0.9751425981521606
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Conv5.conv.3",
+          "patches": 434,
+          "rank_added": 77,
+          "rank_after": 585,
+          "rank_before": 508,
+          "retained_energy": 0.9752184748649597
+        },
+        {
+          "input_dimension": 9216,
+          "layer": "backbone.Up4.up.1",
+          "patches": 434,
+          "rank_added": 146,
+          "rank_after": 1046,
+          "rank_before": 900,
+          "retained_energy": 0.9751887917518616
+        },
+        {
+          "input_dimension": 4644,
+          "layer": "backbone.Up_conv4.conv.0",
+          "patches": 861,
+          "rank_added": 14,
+          "rank_after": 194,
+          "rank_before": 180,
+          "retained_energy": 0.975163459777832
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up_conv4.conv.3",
+          "patches": 868,
+          "rank_added": 23,
+          "rank_after": 239,
+          "rank_before": 216,
+          "retained_energy": 0.9751024842262268
+        },
+        {
+          "input_dimension": 4608,
+          "layer": "backbone.Up3.up.1",
+          "patches": 868,
+          "rank_added": 27,
+          "rank_after": 395,
+          "rank_before": 368,
+          "retained_energy": 0.975129246711731
+        },
+        {
+          "input_dimension": 2340,
+          "layer": "backbone.Up_conv3.conv.0",
+          "patches": 1709,
+          "rank_added": 2,
+          "rank_after": 49,
+          "rank_before": 47,
+          "retained_energy": 0.9750473499298096
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv3.conv.3",
+          "patches": 1736,
+          "rank_added": 8,
+          "rank_after": 76,
+          "rank_before": 68,
+          "retained_energy": 0.9753585457801819
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up2.up.1",
+          "patches": 1736,
+          "rank_added": 2,
+          "rank_after": 80,
+          "rank_before": 78,
+          "retained_energy": 0.9752921462059021
+        },
+        {
+          "input_dimension": 2304,
+          "layer": "backbone.Up_conv2.conv.0",
+          "patches": 1736,
+          "rank_added": 0,
+          "rank_after": 69,
+          "rank_before": 69,
+          "retained_energy": 0.9758406281471252
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv2.conv.3",
+          "patches": 3472,
+          "rank_added": 8,
+          "rank_after": 68,
+          "rank_before": 60,
+          "retained_energy": 0.9751155972480774
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up1.up.1",
+          "patches": 3472,
+          "rank_added": 4,
+          "rank_after": 42,
+          "rank_before": 38,
+          "retained_energy": 0.976098895072937
+        },
+        {
+          "input_dimension": 1152,
+          "layer": "backbone.Up_conv1.conv.0",
+          "patches": 3472,
+          "rank_added": 0,
+          "rank_after": 83,
+          "rank_before": 83,
+          "retained_energy": 0.981307327747345
+        },
+        {
+          "input_dimension": 576,
+          "layer": "backbone.Up_conv1.conv.3",
+          "patches": 4096,
+          "rank_added": 0,
+          "rank_after": 33,
+          "rank_before": 33,
+          "retained_energy": 0.9781289100646973
+        }
+      ],
+      "stage": 5,
+      "state_bytes": 85541184,
+      "task": "F",
+      "threshold": 0.975
+    },
+    "stage": 5
+  }
+]

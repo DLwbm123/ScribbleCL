@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+.venv/
+data/
+sparse_annotations/
+runs/
+logs/
+output/
+*.h5
+*.npz
+*.pt
+*.pth
+*.ckpt
