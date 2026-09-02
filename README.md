@@ -64,24 +64,25 @@ python -u main.py --setting-run \
 
 ## Joint-domain reference
 
-`zs_joint_domain.py` pools all A-F training slices into one dataset. Model
-selection uses the equal mean of the six validation-domain Dice scores, and
-the final report retains per-domain test Dice.
+`main.py --setting-run --method zs-joint` pools all A-F training slices into
+one dataset. Model selection uses the equal mean of the six validation-domain
+Dice scores, and the final report retains one `joint` performance-matrix row.
+`--max-task` is intentionally rejected for this method.
 
 ```bash
 # Configuration 1
-python -u zs_joint_domain.py \
+python -u main.py --setting-run \
   --data-root <data-root> --sparse-root <sparse-root> \
   --output runs/zs_joint_b2_lr0015 --device cuda:0 --seed 42 \
-  --epochs 150 --batch-size 2 --lr 0.015 --workers 8 \
-  --validate-every 2000 --zs-global-weight 1.0
+  --epochs-per-task 150 --batch-size 2 --lr 0.015 --workers 8 \
+  --validate-every 2000 --method zs-joint --zs-global-weight 1.0
 
 # Configuration 2
-python -u zs_joint_domain.py \
+python -u main.py --setting-run \
   --data-root <data-root> --sparse-root <sparse-root> \
   --output runs/zs_joint_b4_lr003 --device cuda:0 --seed 42 \
-  --epochs 150 --batch-size 4 --lr 0.03 --workers 8 \
-  --validate-every 1000 --zs-global-weight 1.0
+  --epochs-per-task 150 --batch-size 4 --lr 0.03 --workers 8 \
+  --validate-every 1000 --method zs-joint --zs-global-weight 1.0
 ```
 
 The joint protocol is an intended reference for upper-bound analysis, but the
