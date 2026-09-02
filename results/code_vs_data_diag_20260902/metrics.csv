@@ -1,0 +1,6 @@
+run,code_path,environment,schedule,validation_mean,status
+c3_adam_e1,divergent_balanced,py312_torch26,adam_lr0001_epoch1,0.0428320,stopped
+c3_sgd_e1,divergent_balanced,py312_torch26,sgd_lr003_epoch1_of3,0.0866957,stopped
+canonical_200_mygpu,commit_67b98ee,py312_torch26,sgd_lr003_200_of200,0.1016432,complete
+canonical_200_source,commit_67b98ee,py310_torch221,sgd_lr003_200_of200,0.1048593,complete
+canonical_lr004_epoch1,commit_67b98ee,py310_torch221,sgd_lr004_epoch1_of5,0.1160662,stopped_after_gate

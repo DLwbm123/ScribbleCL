@@ -1,6 +1,26 @@
 # Completed results
 
-All four runs completed six-domain evaluation without a recorded traceback,
+## Validated canonical joint training
+
+The synchronized `ScribbleCL44` code path pools all 2,266 A-F training slices
+and uses 567 shuffled batches per epoch. Values below are Dice fractions.
+
+| LR | Epochs | Best validation | Test mean |
+|---:|---:|---:|---:|
+| 0.02 | 3 | 0.4261 | 0.3730 |
+| 0.03 | 3 | 0.4876 | 0.4858 |
+| 0.04 | 3 | 0.5228 | 0.5414 |
+| 0.03 | 5 | 0.5287 | 0.4998 |
+| **0.04** | **5** | **0.5662** | **0.5628** |
+
+The selected five-epoch checkpoint produced A-F Dice
+`0.6163 / 0.5365 / 0.6602 / 0.5964 / 0.6039 / 0.3635`; training loss decreased
+from 0.3166 to 0.1877. All published short runs passed the output-contract
+audit.
+
+## Legacy standalone runs
+
+The four older runs completed six-domain evaluation without a recorded traceback,
 CUDA OOM, non-finite loss, or disk error. Values below are Dice fractions.
 
 | Run | A | B | C | D | E | F | Mean / A-Dice | BWTR | E-FWT |
@@ -19,6 +39,7 @@ The batch-2 joint configuration selected its best checkpoint at epoch 1,
 iteration 2000, with mean validation Dice 0.108281. The batch-4 configuration
 selected epoch 12, iteration 7000, with mean validation Dice 0.094450.
 
-These are completed experiment outputs, not paper claims. In this sweep the
-joint configurations were below ZS-GPM, so calling them a measured upper
-bound would be inaccurate.
+These are preserved experiment outputs, not paper claims. The two low joint
+rows came from the now-removed standalone training entry and are superseded by
+the canonical convergence study above; they must not be used as the joint
+upper-bound result.

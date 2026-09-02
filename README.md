@@ -4,14 +4,22 @@ This repository contains the public, data-free code and compact outputs for a
 six-domain weakly supervised continual segmentation experiment. The shared
 model is the ZScribbleSeg U-Net with one binary output head.
 
-The public package covers four completed runs:
+The canonical joint-training implementation is
+`main.py --setting-run --method zs-joint`. A seed-42 short convergence study reached **0.5662 mean validation
+Dice** and **0.5628 mean A-F test Dice** after five epochs with batch size 4 and
+learning rate 0.04.
+
+The public package also preserves earlier continual and standalone diagnostic
+runs:
 
 - Domain-CL with ZS-GPM
 - Domain-CL with ZS-DER++
-- joint-domain ZS training with batch size 2 and learning rate 0.015
-- joint-domain ZS training with batch size 4 and learning rate 0.03
+- two legacy standalone joint-domain runs
 
-See [RESULTS.md](RESULTS.md) for the measured results and interpretation.
+See [RESULTS.md](RESULTS.md), the [short convergence
+report](reports/joint_short_convergence_20260902.md), and the [code-versus-data
+diagnosis](reports/code_vs_data_diagnosis_20260902.md) for measured results and
+interpretation.
 
 ## Data contract
 
@@ -28,8 +36,8 @@ sparse archive contains one `annotations` array. Do not commit these inputs.
 
 ## Environment
 
-The completed runs used Python 3.12 and the versions pinned in
-`requirements.txt` on NVIDIA A100 40 GB GPUs.
+The validated joint run used Python 3.10 and the versions pinned in
+`requirements.txt`.
 
 ```bash
 python -m venv .venv
@@ -62,7 +70,7 @@ python -u main.py --setting-run \
   --der-alpha 0.5 --der-beta 0.5
 ```
 
-## Joint-domain reference
+## Canonical joint-domain reference
 
 `main.py --setting-run --method zs-joint` pools all A-F training slices into
 one dataset. Model selection uses the equal mean of the six validation-domain
@@ -70,24 +78,17 @@ Dice scores, and the final report retains one `joint` performance-matrix row.
 `--max-task` is intentionally rejected for this method.
 
 ```bash
-# Configuration 1
 python -u main.py --setting-run \
   --data-root <data-root> --sparse-root <sparse-root> \
-  --output runs/zs_joint_b2_lr0015 --device cuda:0 --seed 42 \
-  --epochs-per-task 150 --batch-size 2 --lr 0.015 --workers 8 \
-  --validate-every 2000 --method zs-joint --zs-global-weight 1.0
-
-# Configuration 2
-python -u main.py --setting-run \
-  --data-root <data-root> --sparse-root <sparse-root> \
-  --output runs/zs_joint_b4_lr003 --device cuda:0 --seed 42 \
-  --epochs-per-task 150 --batch-size 4 --lr 0.03 --workers 8 \
-  --validate-every 1000 --method zs-joint --zs-global-weight 1.0
+  --output runs/zs_joint_b4_lr004 --device cuda:0 --seed 42 \
+  --epochs-per-task 5 --batch-size 4 --lr 0.04 --workers 4 \
+  --validate-every 567 --method zs-joint --zs-global-weight 1.0
 ```
 
-The joint protocol is an intended reference for upper-bound analysis, but the
-two configurations reported here did not numerically exceed ZS-GPM. They
-must not be described as an empirical upper bound without further tuning.
+The removed standalone `zs_joint_domain.py` duplicated the canonical path and
+was the source of divergent experiments. Use only the command above for joint
+training. The five-epoch result is an implementation/convergence check, not a
+multi-seed final upper-bound estimate.
 
 ## Public-release scope
 
