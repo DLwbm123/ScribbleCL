@@ -9,6 +9,10 @@ The canonical joint-training implementation is
 Dice** and **0.5628 mean A-F test Dice** after five epochs with batch size 4 and
 learning rate 0.04.
 
+New evaluations use an unweighted patient/class macro-average over background
+class `0` and the task foreground classes. Existing reported values predate this
+metric change and must be recomputed from their checkpoints before comparison.
+
 The public package also preserves earlier continual and standalone diagnostic
 runs:
 

@@ -499,10 +499,11 @@ def evaluate(
     prediction, target = np.concatenate(predictions), np.concatenate(targets)
     starts = [0] + [int(value) + 1 for value in ends[:-1]]
     stops = [int(value) + 1 for value in ends]
+    metric_classes = tuple(dict.fromkeys((0, *classes)))
     per_patient = []
     for start, stop in zip(starts, stops):
         per_class = []
-        for label in classes:
+        for label in metric_classes:
             predicted = prediction[start:stop] == label
             expected = target[start:stop] == label
             per_class.append(float((2 * np.logical_and(predicted, expected).sum() + 1e-5) /
@@ -511,6 +512,8 @@ def evaluate(
     values = np.asarray(per_patient, dtype=float)
     result = {
         "benchmark_mean": float(values.mean()),
+        "dice_includes_background": True,
+        "metric_classes": list(metric_classes),
         "per_class": values.mean(axis=0).tolist(),
         "per_patient": values.tolist(),
         "prediction_fg_fraction": float((prediction > 0).mean()),
@@ -621,6 +624,7 @@ def _run_independent_domain_references(args, tasks: tuple[Task, ...], device: to
         "seed": args.seed,
         "epochs_per_task": args.epochs_per_task,
         "task_order": [task.code for task in tasks],
+        "dice_includes_background": True,
         "history_images": False,
         "replay": False,
         "data_root": "<external_data>",
@@ -881,6 +885,7 @@ def main(project_scenario: str) -> None:
         "epochs_per_task": args.epochs_per_task,
         "task_count": last_stage + 1,
         "task_order": [task.code for task in tasks[:last_stage + 1]],
+        "dice_includes_background": True,
         "training_mode": "joint" if use_joint else "continual",
         "test_for_selection": False,
         "history_images": use_der or use_derpp,
@@ -1270,6 +1275,7 @@ def main(project_scenario: str) -> None:
         "method": args.method,
         "completed_stages": 1 if use_joint else last_stage + 1,
         "joint_training": use_joint,
+        "dice_includes_background": True,
         "final_seen_mean": float(np.nanmean(final_values)),
         "matrix": serializable_matrix,
         "stage_rows": stage_rows,
