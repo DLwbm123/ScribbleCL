@@ -622,7 +622,8 @@ def _run_independent_references(
     selection_metric = "inclusive_mean" if scenario == "domain" else "foreground_mean"
     manifest = {
         "scenario": scenario,
-        "mode": "independent_fully_supervised" if args.independent_supervision == "full" else "independent_scribble_supervised",
+        "mode": f"independent_{args.method}_{args.independent_supervision}",
+        "method": args.method,
         "main_entry": "main.py",
         "backbone": "ZScribbleSeg_UNet",
         "seed": args.seed,
@@ -630,6 +631,11 @@ def _run_independent_references(
         "task_order": [tasks[index].code for index in selected],
         "selection_metric": selection_metric,
         "dice_includes_background": selection_metric == "inclusive_mean",
+        "pce_loss_weight": args.pce_loss_weight,
+        "zs_global_weight": args.zs_global_weight,
+        "zs_spatial_loss_weight": args.zs_spatial_loss_weight,
+        "zs_spatial_warmup_epochs": args.zs_spatial_warmup_epochs,
+        "test_evaluated": not args.independent_skip_test,
         "history_images": False,
         "replay": False,
         "data_root": "<external_data>",
@@ -648,6 +654,7 @@ def _run_independent_references(
         model.activate_stage(index)
         task_id = index if scenario == "organ" else None
         full_supervision = args.independent_supervision == "full"
+        use_zs = args.method.startswith("zs-")
         train = H5Slices(
             args.data_root / task.folder / task.filename,
             "train",
@@ -685,13 +692,38 @@ def _run_independent_references(
             for epoch in range(args.epochs_per_task):
                 model.train()
                 losses = []
+                pce_losses = []
+                global_losses = []
+                spatial_losses = []
                 for batch_index, (image, label) in enumerate(train_loader):
                     if batch_index >= batches_per_epoch:
                         break
                     image, label = image.to(device), label.to(device)
+                    target = native_target(label, model.output_channels(index))
                     optimizer.zero_grad(set_to_none=True)
-                    probability = zs_forward(model, image, task_id)["pred_masks"]
-                    loss = pce_loss(probability, native_target(label, model.output_channels(index)))
+                    use_spatial = use_zs and args.zs_spatial_loss_weight > 0 and epoch > args.zs_spatial_warmup_epochs
+                    ratios = None
+                    if use_spatial:
+                        model.eval()
+                        with torch.no_grad():
+                            ratios = zs_em_mixture_ratios(zs_forward(model, image, task_id)["pred_masks"], target)
+                        model.train()
+                    if use_zs and (args.zs_global_weight or args.zs_gd_loss):
+                        outputs, global_loss, gd_loss, _ = zs_cutout_invariance(
+                            model, image, target, task_id, args, device,
+                        )
+                    else:
+                        outputs = zs_forward(model, image, task_id)
+                        global_loss = gd_loss = image.new_zeros(())
+                    partial_ce = pce_loss(outputs["pred_masks"], target)
+                    loss = args.pce_loss_weight * partial_ce + args.zs_global_weight * global_loss
+                    if args.zs_gd_loss:
+                        loss = loss + gd_loss
+                    if use_spatial:
+                        spatial_loss, _ = zs_spatial_prior_loss(outputs["pred_masks"], image, target, ratios)
+                        loss = loss + args.zs_spatial_loss_weight * spatial_loss
+                    else:
+                        spatial_loss = image.new_zeros(())
                     if not torch.isfinite(loss):
                         raise FloatingPointError("non-finite independent-reference loss")
                     loss.backward()
@@ -701,6 +733,9 @@ def _run_independent_references(
                     for group in optimizer.param_groups:
                         group["lr"] = learning_rate
                     losses.append(float(loss.detach()))
+                    pce_losses.append(float(partial_ce.detach()))
+                    global_losses.append(float(global_loss.detach()))
+                    spatial_losses.append(float(spatial_loss.detach()))
                     if iteration % args.validate_every == 0:
                         validation = score(val_loader)
                         if validation[selection_metric] > best[selection_metric]:
@@ -712,6 +747,9 @@ def _run_independent_references(
                     "epoch": epoch,
                     "iteration": iteration,
                     "loss": float(np.mean(losses)),
+                    "pce_loss": float(np.mean(pce_losses)),
+                    "zs_global_loss": float(np.mean(global_losses)),
+                    "zs_spatial_loss": float(np.mean(spatial_losses)),
                 }, sort_keys=True) + "\n")
                 stream.flush()
         validation = score(val_loader)
@@ -720,21 +758,25 @@ def _run_independent_references(
             torch.save(model.state_dict(), best_path)
         torch.save(model.state_dict(), args.output / ("last.pt" if len(selected) == 1 else f"s{index + 1:02d}_last.pt"))
         model.load_state_dict(torch.load(best_path, map_location=device))
-        test_set = H5Slices(
-            args.data_root / task.folder / task.filename,
-            "test",
-            label_shift=task.label_shift if scenario == "class" else 0,
-        )
-        test_loader = _loader(test_set, args.batch_size, False, 0, 0)
-        test_result = evaluate(model, test_loader, test_set.ends, device, task_id, (0, *task.classes))
-        test = {
-            "inclusive_mean": test_result["benchmark_mean"],
-            "foreground_mean": float(np.mean(test_result["per_class"][1:])),
-            "per_class_including_background": test_result["per_class"],
-            "prediction_fg_fraction": test_result["prediction_fg_fraction"],
-        }
-        scores.append(test[selection_metric])
-        records.append({"task": task.code, "score": test[selection_metric], "test": test, "best_validation": best})
+        test = None
+        if not args.independent_skip_test:
+            test_set = H5Slices(
+                args.data_root / task.folder / task.filename,
+                "test",
+                label_shift=task.label_shift if scenario == "class" else 0,
+            )
+            test_loader = _loader(test_set, args.batch_size, False, 0, 0)
+            test_result = evaluate(model, test_loader, test_set.ends, device, task_id, (0, *task.classes))
+            test = {
+                "inclusive_mean": test_result["benchmark_mean"],
+                "foreground_mean": float(np.mean(test_result["per_class"][1:])),
+                "per_class_including_background": test_result["per_class"],
+                "prediction_fg_fraction": test_result["prediction_fg_fraction"],
+            }
+            test_set.close()
+        score_value = best[selection_metric] if test is None else test[selection_metric]
+        scores.append(score_value)
+        records.append({"task": task.code, "score": score_value, "test": test, "best_validation": best})
         (args.output / "independent_scores.json").write_text(json.dumps({
             "scenario": scenario,
             "supervision": args.independent_supervision,
@@ -745,7 +787,6 @@ def _run_independent_references(
         }, indent=2, sort_keys=True) + "\n")
         train.close()
         val.close()
-        test_set.close()
         del model
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
@@ -822,6 +863,7 @@ def main(project_scenario: str) -> None:
     parser.add_argument("--independent-reference", action="store_true")
     parser.add_argument("--independent-task", type=int)
     parser.add_argument("--independent-supervision", choices=("full", "scribble"), default="scribble")
+    parser.add_argument("--independent-skip-test", action="store_true")
     parser.add_argument("--independent-scores", type=Path)
     args = parser.parse_args()
     use_zs = args.method.startswith("zs-")
@@ -863,9 +905,10 @@ def main(project_scenario: str) -> None:
     if args.max_train_batches is not None and args.max_train_batches < 1:
         parser.error("--max-train-batches must be positive")
     if args.independent_reference and (
-        project_scenario not in {"domain", "class"} or args.method != "pce-sequential"
+        project_scenario not in {"domain", "class"}
+        or args.method not in {"pce-sequential", "zs-sequential"}
     ):
-        parser.error("independent references are Domain/Class PCE from-scratch runs")
+        parser.error("independent references support Domain/Class PCE or ZS from-scratch runs")
     tasks = TASKS[project_scenario]
     if args.independent_task is not None and not 1 <= args.independent_task <= len(tasks):
         parser.error("--independent-task is one-based and outside the task sequence")
