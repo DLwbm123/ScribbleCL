@@ -23,7 +23,7 @@ Domain-CL and Class-CL select separate shared coefficient sets because their cla
 | c07 | 0.5 | 1.0 | 0.05 |
 | c08 | 2.0 | 1.0 | 0.05 |
 
-Domain selection maximizes background-inclusive validation Dice. Class selection maximizes foreground validation Dice. Tuning runs use `--independent-skip-test`, so no test split is evaluated or used for coefficient selection.
+Domain and Class selection both maximize foreground validation Dice. Tuning runs use `--independent-skip-test`, so no test split is evaluated or used for coefficient selection. The initial background-inclusive Domain selection run was stopped before any candidate completed and archived; the restarted run uses foreground Dice throughout. Final reports still include both foreground and background-inclusive Dice.
 
 ## Formal continuation
 

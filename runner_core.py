@@ -619,7 +619,7 @@ def _run_independent_references(
     selected = range(len(tasks)) if args.independent_task is None else (args.independent_task - 1,)
     selected = tuple(selected)
     args.output.mkdir(parents=True, exist_ok=False)
-    selection_metric = "inclusive_mean" if scenario == "domain" else "foreground_mean"
+    selection_metric = "foreground_mean"
     manifest = {
         "scenario": scenario,
         "mode": f"independent_{args.method}_{args.independent_supervision}",
