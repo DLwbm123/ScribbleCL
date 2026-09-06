@@ -1,0 +1,16 @@
+{
+  "scenario": "domain",
+  "run_id": "t4m7b",
+  "checkpoint": "s06.pt",
+  "stage": 6,
+  "foreground_only": 0.5437475073579937,
+  "background_inclusive": 0.768733101380178,
+  "tasks": {
+    "A": {"foreground_only": 0.6607539745936357, "background": 0.9938890711546019, "background_inclusive": 0.8273215228741188},
+    "B": {"foreground_only": 0.748716425277317, "background": 0.9954418584814725, "background_inclusive": 0.8720791418793947},
+    "C": {"foreground_only": 0.6055146370732349, "background": 0.9932343155725449, "background_inclusive": 0.79937447632289},
+    "D": {"foreground_only": 0.23678599807521075, "background": 0.99449670778445, "background_inclusive": 0.6156413529298304},
+    "E": {"foreground_only": 0.37495891429943096, "background": 0.9901493032007297, "background_inclusive": 0.6825541087500804},
+    "F": {"foreground_only": 0.6357550948291332, "background": 0.9951009162203738, "background_inclusive": 0.8154280055247535}
+  }
+}

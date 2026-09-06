@@ -2,7 +2,7 @@
 
 ## Outcome
 
-Joint ZScribbleSeg training converged within five epochs. The selected recipe (`lr=0.04`, batch size 4) achieved **0.5662 mean validation Dice** and **0.5628 mean A-F test Dice**. Its loss decreased monotonically from 0.3166 to 0.1877.
+Joint ZScribbleSeg training converged within five epochs. The selected recipe (`lr=0.04`, batch size 4) achieved **0.5662 mean foreground-only validation Dice**, **0.5628 foreground-only A-F test Dice**, and **0.7760 background-inclusive A-F test Dice**. Its loss decreased monotonically from 0.3166 to 0.1877.
 
 The 200-step learning-rate gate showed that increasing the rate without limit was harmful: `lr=0.10` collapsed to 0.0141 mean test Dice. The useful short-run range was 0.03-0.04, with 0.04 consistently strongest in the full-epoch comparison.
 
@@ -18,7 +18,7 @@ The 200-step learning-rate gate showed that increasing the rate without limit wa
 
 ## Full-epoch comparison
 
-| Run | LR | Epochs | Best val | Test mean | A | B | C | D | E | F |
+| Run | LR | Epochs | Best foreground val | Foreground test mean | A | B | C | D | E | F |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
 | r8c4w | 0.02 | 3 | 0.4261 | 0.3730 | 0.3027 | 0.4554 | 0.4968 | 0.2337 | 0.4746 | 0.2750 |
 | t5n9b | 0.03 | 3 | 0.4876 | 0.4858 | 0.4123 | 0.5003 | 0.5702 | 0.5618 | 0.5144 | 0.3560 |
@@ -28,6 +28,6 @@ The 200-step learning-rate gate showed that increasing the rate without limit wa
 
 ## Interpretation
 
-This is a convergence and implementation-validity check, not a final multi-seed result. Five epochs are sufficient to show that the joint path, sparse-label loader, optimizer, validation selection, checkpoint reload, and A-F evaluation work together. The next formal upper-bound run should retain `lr=0.04` and use the required longer schedule; no additional high-LR sweep is justified by these results.
+This is a convergence and implementation-validity check, not a final multi-seed result. Five epochs are sufficient to show that the joint path, sparse-label loader, optimizer, validation selection, checkpoint reload, and A-F evaluation work together. The paired background-inclusive value was computed later from the same selected checkpoint and did not affect selection. A formal upper-bound claim requires a longer schedule; no additional high-LR sweep is justified by these results.
 
 Raw medical data and checkpoints are excluded. The CSV files contain the complete anonymous aggregate metrics and epoch curves needed to reproduce this report.

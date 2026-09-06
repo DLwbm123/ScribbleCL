@@ -5,25 +5,24 @@ six-domain weakly supervised continual segmentation experiment. The shared
 model is the ZScribbleSeg U-Net with one binary output head.
 
 The canonical joint-training implementation is
-`main.py --setting-run --method zs-joint`. A seed-42 short convergence study reached **0.5662 mean validation
-Dice** and **0.5628 mean A-F test Dice** after five epochs with batch size 4 and
-learning rate 0.04.
+`main.py --setting-run --method zs-joint`. A seed-42 short convergence study
+reached **0.5662 mean validation Dice**, **0.5628 foreground-only test Dice**,
+and **0.7760 background-inclusive test Dice** after five epochs.
 
-New evaluations use an unweighted patient/class macro-average over background
-class `0` and the task foreground classes. Existing reported values predate this
-metric change and must be recomputed from their checkpoints before comparison.
+Current evaluations use an unweighted patient/class macro-average over
+background class `0` and the task foreground classes. Foreground-only values
+remain beside them to expose segmentation failures hidden by easy background.
 
-The public package also preserves earlier continual and standalone diagnostic
-runs:
+The public package contains the latest retained Domain results:
 
 - Domain-CL with ZS-GPM
 - Domain-CL with ZS-DER++
-- two legacy standalone joint-domain runs
+- canonical five-epoch ZS-Joint convergence diagnostic
 
 See [RESULTS.md](RESULTS.md), the [short convergence
-report](reports/joint_short_convergence_20260902.md), and the [code-versus-data
-diagnosis](reports/code_vs_data_diagnosis_20260902.md) for measured results and
-interpretation.
+report](reports/joint_short_convergence_20260902.md), and the [background-Dice
+audit](reports/domain_t4m7b_background_comparison_20260906.md) for measured
+results and interpretation.
 
 ## Data contract
 
@@ -68,10 +67,10 @@ ZS-DER++:
 python -u main.py --setting-run \
   --data-root <data-root> --sparse-root <sparse-root> \
   --output runs/domain_zs_derpp --device cuda:0 --seed 42 \
-  --epochs-per-task 150 --batch-size 4 --lr 0.03 --workers 8 \
+  --epochs-per-task 80 --batch-size 4 --lr 0.03 --workers 4 \
   --validate-every 200 --method zs-derpp --zs-global-weight 1.0 \
   --der-buffer-size 64 --der-minibatch-size 8 \
-  --der-alpha 0.5 --der-beta 0.5
+  --der-alpha 1.0 --der-beta 0.5
 ```
 
 ## Canonical joint-domain reference
