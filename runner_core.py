@@ -78,6 +78,7 @@ class H5Slices(Dataset):
         sparse_path: Path | None = None,
         label_shift: int = 0,
         augment: bool = False,
+        full_supervision: bool = False,
     ) -> None:
         self.path = str(path)
         self.split = split
@@ -88,15 +89,15 @@ class H5Slices(Dataset):
             self.length = int(handle[f"{split}_images"].shape[2])
             self.ends = None if split == "train" else np.asarray(handle[f"patient_info_{split}"], dtype=np.int64)
         self.sparse = None
-        if split == "train":
-            if sparse_path is None:
-                raise ValueError("training requires a sparse annotation archive")
+        if split == "train" and sparse_path is not None:
             archive = np.load(sparse_path, allow_pickle=False)
             if set(archive.files) != {"annotations"}:
                 raise ValueError("sparse archive contract violation")
             self.sparse = np.asarray(archive["annotations"], dtype=np.int16)
             if self.sparse.shape != (self.length, 256, 256):
                 raise ValueError("sparse annotation shape mismatch")
+        elif split == "train" and not full_supervision:
+            raise ValueError("training requires a sparse annotation archive")
 
     def __len__(self) -> int:
         return self.length
@@ -612,59 +613,85 @@ def domain_matrix_metrics(
     return result
 
 
-def _run_independent_domain_references(args, tasks: tuple[Task, ...], device: torch.device) -> None:
-    if args.max_task is not None:
-        raise ValueError("independent references require the complete A-to-F task list")
+def _run_independent_references(
+    args, tasks: tuple[Task, ...], device: torch.device, scenario: str,
+) -> None:
+    selected = range(len(tasks)) if args.independent_task is None else (args.independent_task - 1,)
+    selected = tuple(selected)
     args.output.mkdir(parents=True, exist_ok=False)
+    selection_metric = "inclusive_mean" if scenario == "domain" else "foreground_mean"
     manifest = {
-        "scenario": "domain",
-        "mode": "independent_pce_references",
+        "scenario": scenario,
+        "mode": "independent_fully_supervised" if args.independent_supervision == "full" else "independent_scribble_supervised",
         "main_entry": "main.py",
         "backbone": "ZScribbleSeg_UNet",
         "seed": args.seed,
         "epochs_per_task": args.epochs_per_task,
-        "task_order": [task.code for task in tasks],
-        "dice_includes_background": True,
+        "task_order": [tasks[index].code for index in selected],
+        "selection_metric": selection_metric,
+        "dice_includes_background": selection_metric == "inclusive_mean",
         "history_images": False,
         "replay": False,
         "data_root": "<external_data>",
-        "sparse_root": "<external_data>",
+        "sparse_root": None if args.independent_supervision == "full" else "<external_data>",
         "status": "running",
     }
     (args.output / "manifest.json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     scores, records = [], []
     train_log = args.output / "train.jsonl"
-    for index, task in enumerate(tasks):
+    for index in selected:
+        task = tasks[index]
         torch.manual_seed(args.seed)
         np.random.seed(args.seed)
         random.seed(args.seed)
-        model = DomainModel().to(device)
+        model = _build_model(scenario).to(device)
+        model.activate_stage(index)
+        task_id = index if scenario == "organ" else None
+        full_supervision = args.independent_supervision == "full"
         train = H5Slices(
             args.data_root / task.folder / task.filename,
             "train",
-            _sparse_path(args.sparse_root, "domain", task, args.seed),
+            None if full_supervision else _sparse_path(args.sparse_root, scenario, task, args.seed),
+            label_shift=task.label_shift if scenario == "class" and full_supervision else 0,
             augment=True,
+            full_supervision=full_supervision,
         )
-        val = H5Slices(args.data_root / task.folder / task.filename, "val")
+        val = H5Slices(
+            args.data_root / task.folder / task.filename,
+            "val",
+            label_shift=task.label_shift if scenario == "class" else 0,
+        )
         train_loader = _loader(train, args.batch_size, True, args.workers, args.seed)
         val_loader = _loader(val, args.batch_size, False, 0, args.seed)
         optimizer = torch.optim.SGD(
             model.parameters(), lr=args.lr, momentum=0.9, weight_decay=1e-4,
         )
-        batches_per_epoch = len(train_loader)
+        batches_per_epoch = min(len(train_loader), args.max_train_batches or len(train_loader))
         max_iterations = batches_per_epoch * args.epochs_per_task
         iteration = 0
-        best = {"benchmark_mean": -1.0, "epoch": None, "iteration": None}
-        best_path = args.output / f"s{index + 1:02d}_best.pt"
+        best = {selection_metric: -1.0, "epoch": None, "iteration": None}
+        best_path = args.output / ("best.pt" if len(selected) == 1 else f"s{index + 1:02d}_best.pt")
+
+        def score(loader):
+            result = evaluate(model, loader, val.ends, device, task_id, (0, *task.classes))
+            return {
+                "inclusive_mean": result["benchmark_mean"],
+                "foreground_mean": float(np.mean(result["per_class"][1:])),
+                "per_class_including_background": result["per_class"],
+                "prediction_fg_fraction": result["prediction_fg_fraction"],
+            }
+
         with train_log.open("a") as stream:
             for epoch in range(args.epochs_per_task):
                 model.train()
                 losses = []
-                for image, label in train_loader:
+                for batch_index, (image, label) in enumerate(train_loader):
+                    if batch_index >= batches_per_epoch:
+                        break
                     image, label = image.to(device), label.to(device)
                     optimizer.zero_grad(set_to_none=True)
-                    probability = zs_forward(model, image, None)["pred_masks"]
-                    loss = pce_loss(probability, native_target(label, 2))
+                    probability = zs_forward(model, image, task_id)["pred_masks"]
+                    loss = pce_loss(probability, native_target(label, model.output_channels(index)))
                     if not torch.isfinite(loss):
                         raise FloatingPointError("non-finite independent-reference loss")
                     loss.backward()
@@ -675,8 +702,8 @@ def _run_independent_domain_references(args, tasks: tuple[Task, ...], device: to
                         group["lr"] = learning_rate
                     losses.append(float(loss.detach()))
                     if iteration % args.validate_every == 0:
-                        validation = evaluate(model, val_loader, val.ends, device, None, task.classes)
-                        if validation["benchmark_mean"] > best["benchmark_mean"]:
+                        validation = score(val_loader)
+                        if validation[selection_metric] > best[selection_metric]:
                             best = {**validation, "epoch": epoch, "iteration": iteration}
                             torch.save(model.state_dict(), best_path)
                 stream.write(json.dumps({
@@ -687,24 +714,38 @@ def _run_independent_domain_references(args, tasks: tuple[Task, ...], device: to
                     "loss": float(np.mean(losses)),
                 }, sort_keys=True) + "\n")
                 stream.flush()
-        validation = evaluate(model, val_loader, val.ends, device, None, task.classes)
-        if validation["benchmark_mean"] > best["benchmark_mean"]:
+        validation = score(val_loader)
+        if validation[selection_metric] > best[selection_metric]:
             best = {**validation, "epoch": args.epochs_per_task - 1, "iteration": iteration}
             torch.save(model.state_dict(), best_path)
+        torch.save(model.state_dict(), args.output / ("last.pt" if len(selected) == 1 else f"s{index + 1:02d}_last.pt"))
         model.load_state_dict(torch.load(best_path, map_location=device))
-        torch.save(model.state_dict(), args.output / f"s{index + 1:02d}.pt")
-        test = _evaluate_task(model, "domain", task, index, args.data_root, "test", args.batch_size, device)
-        scores.append(test["benchmark_mean"])
-        records.append({"task": task.code, "score": test["benchmark_mean"], "best_validation": best})
+        test_set = H5Slices(
+            args.data_root / task.folder / task.filename,
+            "test",
+            label_shift=task.label_shift if scenario == "class" else 0,
+        )
+        test_loader = _loader(test_set, args.batch_size, False, 0, 0)
+        test_result = evaluate(model, test_loader, test_set.ends, device, task_id, (0, *task.classes))
+        test = {
+            "inclusive_mean": test_result["benchmark_mean"],
+            "foreground_mean": float(np.mean(test_result["per_class"][1:])),
+            "per_class_including_background": test_result["per_class"],
+            "prediction_fg_fraction": test_result["prediction_fg_fraction"],
+        }
+        scores.append(test[selection_metric])
+        records.append({"task": task.code, "score": test[selection_metric], "test": test, "best_validation": best})
         (args.output / "independent_scores.json").write_text(json.dumps({
-            "scenario": "domain",
+            "scenario": scenario,
+            "supervision": args.independent_supervision,
             "seed": args.seed,
             "scores": scores,
             "records": records,
-            "complete": len(scores) == len(tasks),
+            "complete": len(scores) == len(selected),
         }, indent=2, sort_keys=True) + "\n")
         train.close()
         val.close()
+        test_set.close()
         del model
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
@@ -779,6 +820,8 @@ def main(project_scenario: str) -> None:
     parser.add_argument("--mib-kd-weight", type=float, default=10.0)
     parser.add_argument("--max-train-batches", type=int)
     parser.add_argument("--independent-reference", action="store_true")
+    parser.add_argument("--independent-task", type=int)
+    parser.add_argument("--independent-supervision", choices=("full", "scribble"), default="scribble")
     parser.add_argument("--independent-scores", type=Path)
     args = parser.parse_args()
     use_zs = args.method.startswith("zs-")
@@ -820,19 +863,33 @@ def main(project_scenario: str) -> None:
     if args.max_train_batches is not None and args.max_train_batches < 1:
         parser.error("--max-train-batches must be positive")
     if args.independent_reference and (
-        project_scenario != "domain" or args.method != "pce-sequential"
+        project_scenario not in {"domain", "class"} or args.method != "pce-sequential"
     ):
-        parser.error("independent references are Domain-only PCE from-scratch runs")
+        parser.error("independent references are Domain/Class PCE from-scratch runs")
     tasks = TASKS[project_scenario]
+    if args.independent_task is not None and not 1 <= args.independent_task <= len(tasks):
+        parser.error("--independent-task is one-based and outside the task sequence")
+    if not args.independent_reference and args.independent_task is not None:
+        parser.error("--independent-task requires --independent-reference")
+    if args.independent_reference and args.max_task is not None:
+        parser.error("--max-task is not used with independent references")
     if use_joint and args.max_task is not None:
         parser.error("zs-joint always trains on all Domain-CL tasks")
     if args.max_task is not None and not 1 <= args.max_task <= len(tasks):
         parser.error("--max-task is one-based and outside the task sequence")
     last_stage = len(tasks) - 1 if args.max_task is None else args.max_task - 1
-    for task in tasks[:last_stage + 1]:
+    checked_tasks = (
+        (tasks[args.independent_task - 1],)
+        if args.independent_reference and args.independent_task is not None
+        else tasks[:last_stage + 1]
+    )
+    for task in checked_tasks:
         data_path = args.data_root / task.folder / task.filename
         sparse_path = _sparse_path(args.sparse_root, project_scenario, task, args.seed)
-        if not data_path.is_file() or not sparse_path.is_file():
+        if not data_path.is_file() or (
+            not (args.independent_reference and args.independent_supervision == "full")
+            and not sparse_path.is_file()
+        ):
             raise FileNotFoundError(f"missing task input for {task.code}")
 
     torch.manual_seed(args.seed)
@@ -840,7 +897,7 @@ def main(project_scenario: str) -> None:
     random.seed(args.seed)
     device = torch.device(args.device)
     if args.independent_reference:
-        _run_independent_domain_references(args, tasks, device)
+        _run_independent_references(args, tasks, device, project_scenario)
         return
     model = _build_model(project_scenario)
     model.to(device)
