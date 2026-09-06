@@ -39,3 +39,14 @@ The queues are balanced using training-slice counts. All large outputs and logs 
 - All four formal queues created their manifests, training processes, and GPU allocations before this report was committed.
 
 Final numbers must not be inferred from this launch report. Publish the completed `independent_scores.json` files and a consolidated comparison table after all 18 runs finish.
+
+## Throughput update at 14:57 CST
+
+Live sampling showed that one process used only 4.7--4.8 GB of each 24 GB GPU and averaged roughly 37%--61% utilization because compute bursts alternated with H5 input waits. The running jobs were preserved, and one additional full-then-scribble pair was added per GPU:
+
+- GPU 4: Class T1 pair plus Domain B pair.
+- GPU 5: Class T2 pair plus Domain D pair.
+- GPU 6: Class T3 pair plus Domain A pair.
+- GPU 7: the Domain F/E queue plus a concurrent Domain C pair.
+
+Post-launch verification found eight training processes, about 9.4--9.5 GB allocated per GPU, 96%--100% instantaneous utilization, and a manifest for every newly started full-supervision run. No active training process was interrupted or restarted.
