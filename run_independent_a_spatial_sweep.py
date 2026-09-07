@@ -42,7 +42,7 @@ def adopted_exit_status(pid, parent, output):
         time.sleep(2)
 
 
-def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP):
+def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP, demo_test_selection=False):
     output = args.output / name
     command = [
         sys.executable, "-u", "main.py", "--setting-run",
@@ -54,6 +54,9 @@ def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP):
         "--pce-loss-weight", "1", "--zs-global-weight", "1",
         "--zs-spatial-loss-weight", str(weight), "--zs-spatial-warmup-epochs", str(warmup),
     ]
+    if demo_test_selection:
+        assert test
+        command.append("--independent-demo-test-selection")
     if not test:
         command.append("--independent-skip-test")
     if name in args.adopt_running:
@@ -83,7 +86,11 @@ def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP):
     if task == 1:
         assert summary["train_samples"] == 301 and summary["batches_per_epoch"] == 76
     assert summary["score_split"] == ("test" if test else "val")
-    assert summary["test_evaluated"] == test and (record["test"] is not None) == test
+    assert summary["test_evaluated"] == test
+    assert (record["test"] is not None) == (test and not demo_test_selection)
+    if demo_test_selection:
+        assert summary["test_for_selection"] and summary["result_usage"] == "platform_demo"
+        assert summary["selection_split"] == "test" and not summary["held_out_test_evaluated"]
     assert manifest["zs_spatial_loss_weight"] == weight
     assert manifest["zs_spatial_warmup_epochs"] == warmup
     train_rows = [json.loads(line) for line in (output / "train.jsonl").read_text().splitlines()]
@@ -94,18 +101,23 @@ def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP):
     assert all(math.isfinite(r["loss"]) and math.isfinite(r["zs_spatial_loss"]) for r in epoch_rows)
     if weight > 0 and epochs > warmup + 1:
         assert active[0]["epoch"] == warmup + 1 and any(r["zs_spatial_loss"] > 0 for r in active)
+    best_selection = record["best_selection"] if demo_test_selection else record["best_validation"]
     row = {
         "run": name, "gpu": gpu, "spatial_weight": weight, "epochs": epochs,
-        "validation_foreground": record["best_validation"]["foreground_mean"],
-        "validation_inclusive": record["best_validation"]["inclusive_mean"],
-        "best_epoch": record["best_validation"]["epoch"],
-        "best_iteration": record["best_validation"]["iteration"],
+        "validation_foreground": best_selection["foreground_mean"],
+        "validation_inclusive": best_selection["inclusive_mean"],
+        "best_epoch": best_selection["epoch"],
+        "best_iteration": best_selection["iteration"],
         "spatial_active_epochs": len(active),
         "spatial_first_epoch_index": warmup + 1, "runner_warmup_argument": warmup,
         "mean_active_spatial_loss": sum(r["zs_spatial_loss"] for r in active) / len(active) if active else 0.0,
         "elapsed_seconds": time.time() - start, "test_evaluated": test,
     }
-    if test:
+    if demo_test_selection:
+        row["demo_selection_foreground"] = row.pop("validation_foreground")
+        row["demo_selection_inclusive"] = row.pop("validation_inclusive")
+        row.update(test_for_selection=True, selection_split="test", result_usage="platform_demo", held_out_test_evaluated=False)
+    if test and not demo_test_selection:
         row["test"] = record["test"]
         if task == 1:
             row["target_difference"] = record["test"]["foreground_mean"] - 0.7261413306722405

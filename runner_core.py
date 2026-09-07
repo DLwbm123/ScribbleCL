@@ -866,6 +866,8 @@ def main(project_scenario: str) -> None:
     parser.add_argument("--independent-task", type=int)
     parser.add_argument("--independent-supervision", choices=("full", "scribble"), default="scribble")
     parser.add_argument("--independent-skip-test", action="store_true")
+    parser.add_argument("--independent-demo-test-selection", action="store_true",
+                        help="Platform demo: use original test split to select checkpoints; not held-out evaluation")
     parser.add_argument("--independent-scores", type=Path)
     args = parser.parse_args()
     independent_domain = (
@@ -873,6 +875,10 @@ def main(project_scenario: str) -> None:
         and args.independent_task is not None and args.method == "zs-sequential"
         and args.independent_supervision == "scribble"
     )
+    demo_selection = args.independent_demo_test_selection
+    if demo_selection and (not independent_domain or args.independent_skip_test):
+        parser.error("demo test selection requires a selected independent Domain ZS run and cannot skip test")
+    selection_split = "test" if demo_selection else "val"
     if args.epochs_per_task is None:
         args.epochs_per_task = 150 if independent_domain and args.independent_task == 1 else 80
     use_zs = args.method.startswith("zs-")
@@ -1007,7 +1013,9 @@ def main(project_scenario: str) -> None:
         "optimizer_weight_decay": 0.0 if use_gpm or independent_domain else 1e-4,
         "manual_gradient_decay": 1e-4 if use_gpm or independent_domain else 0.0,
         "test_evaluated": not independent_domain,
-        "test_for_selection": False,
+        "test_for_selection": demo_selection,
+        "selection_split": selection_split,
+        "result_usage": "platform_demo" if demo_selection else "standard_evaluation",
         "history_images": use_der or use_derpp,
         "replay": use_der or use_derpp,
         "ignore_index": IGNORE_INDEX,
@@ -1087,7 +1095,7 @@ def main(project_scenario: str) -> None:
         train = ConcatDataset(train_parts) if use_joint else train_parts[0]
         val = None if use_joint else H5Slices(
             args.data_root / task.folder / task.filename,
-            "val",
+            selection_split,
             label_shift=task.label_shift if project_scenario == "class" else 0,
         )
         train_loader = _loader(train, args.batch_size, True, args.workers, args.seed + stage)
@@ -1242,6 +1250,7 @@ def main(project_scenario: str) -> None:
                             "stage": stage,
                             "epoch": epoch,
                             "iteration": iteration,
+                            "selection_split": selection_split,
                             "validation": validation,
                         }, sort_keys=True) + "\n")
                         stream.flush()
@@ -1286,7 +1295,7 @@ def main(project_scenario: str) -> None:
         model.load_state_dict(torch.load(best_path, map_location=device))
         if independent_domain:
             test = None
-            if not args.independent_skip_test:
+            if not args.independent_skip_test and not demo_selection:
                 test = _evaluate_task(
                     model, project_scenario, task, 0, args.data_root, "test", args.batch_size, device,
                 )
@@ -1302,10 +1311,17 @@ def main(project_scenario: str) -> None:
                 "train_samples": len(train), "batches_per_epoch": batches_per_epoch,
                 "completed_epochs": args.epochs_per_task, "iteration": iteration, "complete": True,
             }
+            summary.update(selection_split=selection_split, test_for_selection=demo_selection,
+                           result_usage="platform_demo" if demo_selection else "standard_evaluation")
+            if demo_selection:
+                summary.update(score_split="test", test_evaluated=True, held_out_test_evaluated=False,
+                               score_label="demo_selection_foreground_dice")
+                record = summary["records"][0]
+                record["best_selection"] = record.pop("best_validation")
             for filename in ("independent_scores.json", "summary.json"):
                 (args.output / filename).write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
             manifest["status"] = "complete"
-            manifest["test_evaluated"] = test is not None
+            manifest["test_evaluated"] = test is not None or demo_selection
             manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
             train.close()
             val.close()
