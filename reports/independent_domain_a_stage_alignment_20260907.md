@@ -1,6 +1,6 @@
 # Independent Domain-A: stage-loop alignment and corrected scribble protocol
 
-Status: **alignment checks passed; corrected 150-epoch runs are in progress. The independent test target has not yet been achieved or evaluated.**
+Status: **both corrected runs completed 150 epochs / 11,400 iterations with exit code 0. Independent foreground test Dice is 0.6792972027; the 0.7261413307 target was not reached.**
 
 ## What was corrected
 
@@ -33,11 +33,27 @@ Checkpoint replay cannot validate training scribbles: it only reads dense evalua
 
 Compact evidence: [checkpoint replay](../results/independent_domain_a_alignment_20260907/gate0.json), [single-step parity](../results/independent_domain_a_alignment_20260907/parity.json), [annotation counts](../results/independent_domain_a_alignment_20260907/sparse_protocols.json).
 
-## Running configuration
+## Completed results
+
+| Run | Best foreground validation Dice | Selected epoch (zero-based) / iteration | Foreground test Dice | Inclusive test Dice |
+|---|---:|---|---:|---:|
+| historical checkpoint replay | 0.7049937621 | 128 / 9,800 | 0.7261413307 | 0.8605453028 |
+| new stage-A reference | 0.6693702634 | 78 / 6,000 | 0.7202847429 | not recorded by pinned evaluator |
+| **new independent Domain A** | **0.7290565244** | **128 / 9,800** | **0.6792972027** | **0.8363642266** |
+
+The reference completed at 2026-09-07 14:12:54 CST; independent training completed at 14:13:37 CST. Both exited successfully. The independent checkpoint was selected solely by foreground validation Dice, then evaluated once on test at 14:27:01. Its validation score exceeded the historical validation anchor, but the test score was **0.0468441279 below** the target (4.68 percentage points). High validation Dice therefore did not establish target test performance.
+
+The new reference is within the handoff's numerical near-reproduction interval, but remains a reference run and is not relabeled as the final independent result. Single-step implementation parity passed; the full runs diverged under the retained nondeterministic CUDA training behavior. The source candidate also lacks a verified historical training SHA. These results do not isolate a unique cause of the generalization gap.
+
+The independent run used no additional coefficient sweep. No further training is currently running. Any next sweep must predefine candidates and rank them by validation only; the observed test score must not be used to select checkpoints or hyperparameters. The one-seed result is not a multi-seed performance claim.
+
+Final evidence: [independent selected checkpoint and test](../results/independent_domain_a_alignment_20260907/independent_selected_test.json), [independent summary](../results/independent_domain_a_alignment_20260907/independent_summary.json), [reference summary](../results/independent_domain_a_alignment_20260907/oracle_summary.json), [validation curves](../results/independent_domain_a_alignment_20260907/validation_curves.csv).
+
+## Training configuration
 
 Both jobs use seed 42, 150 epochs, batch 4, LR 0.03 with polynomial decay, SGD momentum 0.9, optimizer decay 0 and manual gradient decay 1e-4, PCE/global/spatial 1/1/0, 8 loader workers, 4 OpenMP threads, and validation every 200 iterations. Domain A has 301 slices, 76 batches per epoch, and 11,400 total steps.
 
-The GPU-6 oracle uses the unchanged pinned stage loop at `2cdb1bec5939d8b6b2399413434b8b3aaa9ea7c2`; its task list is restricted to A. GPU 7 runs the independent interface on current source with this patch. They are aligned baseline runs, not a coefficient sweep. The independent run uses `--independent-skip-test`; configuration selection and any later tuning must use validation only.
+The GPU-6 oracle uses the unchanged pinned stage loop at `2cdb1bec5939d8b6b2399413434b8b3aaa9ea7c2`; its task list is restricted to A. GPU 7 runs the independent interface on current source with this patch. They are aligned baseline runs, not a coefficient sweep. The independent training run used `--independent-skip-test`; its validation-selected `best.pt` was evaluated once after training finished. The initial validation-only summary is retained remotely as `validation_summary.json`; final summaries now explicitly mark `score_split=test`.
 
 Use the existing Python 3.10.6 / Torch 2.2.1+cu121 environment. On the authorized experiment host:
 
@@ -55,4 +71,4 @@ CUDA_VISIBLE_DEVICES=7 OMP_NUM_THREADS=4 \
 
 The output must be new for a rerun. Full logs, checkpoints, launch scripts, and exit-code markers are under the common `/data_nas/.../tune_independent_A_07261_seed42_20260907_1303` directory. The original `/home/jiangsuiyang/q1d7f` was not modified. No data, annotations, checkpoints, full logs, or credentials are included in this public release.
 
-Next: wait for both full runs, inspect foreground validation-selected checkpoints, then decide whether any parameter change is warranted. Evaluate the selected independent configuration on the test split once and publish the final foreground/inclusive results. The 0.7261 target remains pending.
+Closeout: code, configuration, compact validation curves, and final metrics are public. Original and new checkpoints, annotations, data, and full logs remain on the experiment host. This aligned baseline is complete; optimization to the independent test target remains unresolved.

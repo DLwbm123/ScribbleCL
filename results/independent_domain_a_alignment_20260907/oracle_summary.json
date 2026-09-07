@@ -1,0 +1,278 @@
+{
+  "A-Dice": 0.7202847429419812,
+  "BWTR": 0.0,
+  "E-FWT": null,
+  "RMA": null,
+  "completed_stages": 1,
+  "der_buffer": null,
+  "der_state_bytes": null,
+  "derpp_buffer": null,
+  "derpp_state_bytes": null,
+  "ewc_state_bytes": null,
+  "final_seen_mean": 0.7202847429419812,
+  "gpm_state_bytes": 19096812,
+  "history_images": false,
+  "joint_training": false,
+  "matrix": [
+    [
+      0.7202847429419812
+    ]
+  ],
+  "method": "zs-gpm",
+  "replay": false,
+  "rma_reference": null,
+  "stage_rows": [
+    {
+      "best_validation": {
+        "benchmark_mean": 0.6693702633550537,
+        "epoch": 78,
+        "iteration": 6000,
+        "per_class": [
+          0.6693702633550537
+        ],
+        "per_patient": [
+          [
+            0.7371142563994308
+          ],
+          [
+            0.6016262703106765
+          ]
+        ],
+        "prediction_fg_fraction": 0.0194280096825133
+      },
+      "der": null,
+      "derpp": null,
+      "evaluated": {
+        "A": {
+          "benchmark_mean": 0.7202847429419812,
+          "per_class": [
+            0.7202847429419812
+          ],
+          "per_patient": [
+            [
+              0.756270244895508
+            ],
+            [
+              0.7564522736895161
+            ],
+            [
+              0.6481317102409194
+            ]
+          ],
+          "prediction_fg_fraction": 0.019943721710689484
+        }
+      },
+      "fisher": null,
+      "gpm": {
+        "examples": 16,
+        "layers": [
+          {
+            "input_dimension": 9,
+            "layer": "backbone.Conv1.conv.0",
+            "patches": 4096,
+            "rank_added": 3,
+            "rank_after": 3,
+            "rank_before": 0,
+            "retained_energy": 0.9763784408569336
+          },
+          {
+            "input_dimension": 576,
+            "layer": "backbone.Conv1.conv.3",
+            "patches": 4096,
+            "rank_added": 22,
+            "rank_after": 22,
+            "rank_before": 0,
+            "retained_energy": 0.9706545472145081
+          },
+          {
+            "input_dimension": 576,
+            "layer": "backbone.Conv2.conv.0",
+            "patches": 4096,
+            "rank_added": 47,
+            "rank_after": 47,
+            "rank_before": 0,
+            "retained_energy": 0.9701613187789917
+          },
+          {
+            "input_dimension": 1152,
+            "layer": "backbone.Conv2.conv.3",
+            "patches": 3472,
+            "rank_added": 62,
+            "rank_after": 62,
+            "rank_before": 0,
+            "retained_energy": 0.9701884984970093
+          },
+          {
+            "input_dimension": 1152,
+            "layer": "backbone.Conv3.conv.0",
+            "patches": 3472,
+            "rank_added": 49,
+            "rank_after": 49,
+            "rank_before": 0,
+            "retained_energy": 0.970605731010437
+          },
+          {
+            "input_dimension": 2304,
+            "layer": "backbone.Conv3.conv.3",
+            "patches": 1736,
+            "rank_added": 32,
+            "rank_after": 32,
+            "rank_before": 0,
+            "retained_energy": 0.9705532193183899
+          },
+          {
+            "input_dimension": 2304,
+            "layer": "backbone.Conv4.conv.0",
+            "patches": 1736,
+            "rank_added": 41,
+            "rank_after": 41,
+            "rank_before": 0,
+            "retained_energy": 0.97014319896698
+          },
+          {
+            "input_dimension": 4608,
+            "layer": "backbone.Conv4.conv.3",
+            "patches": 868,
+            "rank_added": 51,
+            "rank_after": 51,
+            "rank_before": 0,
+            "retained_energy": 0.9703375697135925
+          },
+          {
+            "input_dimension": 4608,
+            "layer": "backbone.Conv5.conv.0",
+            "patches": 868,
+            "rank_added": 60,
+            "rank_after": 60,
+            "rank_before": 0,
+            "retained_energy": 0.970072865486145
+          },
+          {
+            "input_dimension": 9216,
+            "layer": "backbone.Conv5.conv.3",
+            "patches": 434,
+            "rank_added": 117,
+            "rank_after": 117,
+            "rank_before": 0,
+            "retained_energy": 0.9701877236366272
+          },
+          {
+            "input_dimension": 9216,
+            "layer": "backbone.Up4.up.1",
+            "patches": 434,
+            "rank_added": 138,
+            "rank_after": 138,
+            "rank_before": 0,
+            "retained_energy": 0.9702417850494385
+          },
+          {
+            "input_dimension": 4644,
+            "layer": "backbone.Up_conv4.conv.0",
+            "patches": 861,
+            "rank_added": 70,
+            "rank_after": 70,
+            "rank_before": 0,
+            "retained_energy": 0.9701891541481018
+          },
+          {
+            "input_dimension": 4608,
+            "layer": "backbone.Up_conv4.conv.3",
+            "patches": 868,
+            "rank_added": 75,
+            "rank_after": 75,
+            "rank_before": 0,
+            "retained_energy": 0.9704235792160034
+          },
+          {
+            "input_dimension": 4608,
+            "layer": "backbone.Up3.up.1",
+            "patches": 868,
+            "rank_added": 52,
+            "rank_after": 52,
+            "rank_before": 0,
+            "retained_energy": 0.9705801606178284
+          },
+          {
+            "input_dimension": 2340,
+            "layer": "backbone.Up_conv3.conv.0",
+            "patches": 1709,
+            "rank_added": 50,
+            "rank_after": 50,
+            "rank_before": 0,
+            "retained_energy": 0.9701849222183228
+          },
+          {
+            "input_dimension": 2304,
+            "layer": "backbone.Up_conv3.conv.3",
+            "patches": 1736,
+            "rank_added": 62,
+            "rank_after": 62,
+            "rank_before": 0,
+            "retained_energy": 0.9704031348228455
+          },
+          {
+            "input_dimension": 2304,
+            "layer": "backbone.Up2.up.1",
+            "patches": 1736,
+            "rank_added": 46,
+            "rank_after": 46,
+            "rank_before": 0,
+            "retained_energy": 0.9702677130699158
+          },
+          {
+            "input_dimension": 2304,
+            "layer": "backbone.Up_conv2.conv.0",
+            "patches": 1736,
+            "rank_added": 70,
+            "rank_after": 70,
+            "rank_before": 0,
+            "retained_energy": 0.9701694846153259
+          },
+          {
+            "input_dimension": 1152,
+            "layer": "backbone.Up_conv2.conv.3",
+            "patches": 3472,
+            "rank_added": 32,
+            "rank_after": 32,
+            "rank_before": 0,
+            "retained_energy": 0.9705208539962769
+          },
+          {
+            "input_dimension": 1152,
+            "layer": "backbone.Up1.up.1",
+            "patches": 3472,
+            "rank_added": 23,
+            "rank_after": 23,
+            "rank_before": 0,
+            "retained_energy": 0.970516562461853
+          },
+          {
+            "input_dimension": 1152,
+            "layer": "backbone.Up_conv1.conv.0",
+            "patches": 3472,
+            "rank_added": 52,
+            "rank_after": 52,
+            "rank_before": 0,
+            "retained_energy": 0.9704708456993103
+          },
+          {
+            "input_dimension": 576,
+            "layer": "backbone.Up_conv1.conv.3",
+            "patches": 4096,
+            "rank_added": 28,
+            "rank_after": 28,
+            "rank_before": 0,
+            "retained_energy": 0.9709357619285583
+          }
+        ],
+        "stage": 0,
+        "state_bytes": 19096812,
+        "task": "A",
+        "threshold": 0.97
+      },
+      "stage": 0,
+      "task": "A",
+      "train_samples": 301
+    }
+  ]
+}

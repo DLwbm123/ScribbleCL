@@ -1,0 +1,86 @@
+{
+  "batches_per_epoch": 76,
+  "complete": true,
+  "completed_epochs": 150,
+  "dice_includes_background": false,
+  "iteration": 11400,
+  "method": "zs-sequential",
+  "records": [
+    {
+      "best_validation": {
+        "benchmark_mean": 0.7290565243701992,
+        "dice_includes_background": false,
+        "epoch": 128,
+        "foreground_mean": 0.7290565243701992,
+        "inclusive_mean": 0.8628877071618766,
+        "iteration": 9800,
+        "metric_classes": [
+          0,
+          1
+        ],
+        "per_class": [
+          0.996718889953554,
+          0.7290565243701992
+        ],
+        "per_patient": [
+          [
+            0.99669546857299,
+            0.7216387579707952
+          ],
+          [
+            0.996742311334118,
+            0.7364742907696031
+          ]
+        ],
+        "prediction_fg_fraction": 0.012866243403008643
+      },
+      "score": 0.6792972027382455,
+      "task": "A",
+      "test": {
+        "benchmark_mean": 0.6792972027382455,
+        "dice_includes_background": false,
+        "foreground_mean": 0.6792972027382455,
+        "inclusive_mean": 0.8363642266342036,
+        "metric_classes": [
+          0,
+          1
+        ],
+        "per_class": [
+          0.9934312505301621,
+          0.6792972027382455
+        ],
+        "per_patient": [
+          [
+            0.995005301243265,
+            0.7796366418221735
+          ],
+          [
+            0.9950207016389079,
+            0.7110690284622677
+          ],
+          [
+            0.9902677487083131,
+            0.547185937930295
+          ]
+        ],
+        "prediction_fg_fraction": 0.024676973857576886
+      }
+    }
+  ],
+  "scenario": "domain",
+  "score_split": "test",
+  "scores": [
+    0.6792972027382455
+  ],
+  "seed": 42,
+  "selection_metric": "foreground_mean",
+  "supervision": "scribble",
+  "target_difference": -0.04684412793399506,
+  "target_reached": false,
+  "task_order": [
+    "A"
+  ],
+  "test_evaluated": true,
+  "train_samples": 301,
+  "training_mode": "independent"
+}
