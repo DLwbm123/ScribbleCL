@@ -42,7 +42,7 @@ def adopted_exit_status(pid, parent, output):
         time.sleep(2)
 
 
-def run_training(args, name, weight, epochs, gpu, test, task=1):
+def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP):
     output = args.output / name
     command = [
         sys.executable, "-u", "main.py", "--setting-run",
@@ -52,7 +52,7 @@ def run_training(args, name, weight, epochs, gpu, test, task=1):
         "--method", "zs-sequential", "--epochs-per-task", str(epochs),
         "--batch-size", "4", "--lr", "0.03", "--workers", "8", "--validate-every", "200",
         "--pce-loss-weight", "1", "--zs-global-weight", "1",
-        "--zs-spatial-loss-weight", str(weight), "--zs-spatial-warmup-epochs", str(WARMUP),
+        "--zs-spatial-loss-weight", str(weight), "--zs-spatial-warmup-epochs", str(warmup),
     ]
     if not test:
         command.append("--independent-skip-test")
@@ -85,15 +85,15 @@ def run_training(args, name, weight, epochs, gpu, test, task=1):
     assert summary["score_split"] == ("test" if test else "val")
     assert summary["test_evaluated"] == test and (record["test"] is not None) == test
     assert manifest["zs_spatial_loss_weight"] == weight
-    assert manifest["zs_spatial_warmup_epochs"] == WARMUP
+    assert manifest["zs_spatial_warmup_epochs"] == warmup
     train_rows = [json.loads(line) for line in (output / "train.jsonl").read_text().splitlines()]
     epoch_rows = [r for r in train_rows if "loss" in r]
     active = [r for r in epoch_rows if r["zs_em_mixture_ratios"] is not None]
     assert len(epoch_rows) == epochs
-    assert len(active) == (epochs - 5 if weight > 0 else 0)
+    assert len(active) == (max(0, epochs - warmup - 1) if weight > 0 else 0)
     assert all(math.isfinite(r["loss"]) and math.isfinite(r["zs_spatial_loss"]) for r in epoch_rows)
-    if weight > 0:
-        assert active[0]["epoch"] == 5 and any(r["zs_spatial_loss"] > 0 for r in active)
+    if weight > 0 and epochs > warmup + 1:
+        assert active[0]["epoch"] == warmup + 1 and any(r["zs_spatial_loss"] > 0 for r in active)
     row = {
         "run": name, "gpu": gpu, "spatial_weight": weight, "epochs": epochs,
         "validation_foreground": record["best_validation"]["foreground_mean"],
@@ -101,6 +101,7 @@ def run_training(args, name, weight, epochs, gpu, test, task=1):
         "best_epoch": record["best_validation"]["epoch"],
         "best_iteration": record["best_validation"]["iteration"],
         "spatial_active_epochs": len(active),
+        "spatial_first_epoch_index": warmup + 1, "runner_warmup_argument": warmup,
         "mean_active_spatial_loss": sum(r["zs_spatial_loss"] for r in active) / len(active) if active else 0.0,
         "elapsed_seconds": time.time() - start, "test_evaluated": test,
     }
