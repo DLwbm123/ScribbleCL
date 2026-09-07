@@ -1,0 +1,59 @@
+{
+  "baseline": {
+    "best_epoch": 42,
+    "output": "/data_nas/jiangsuiyang/ScribbleCL/independent_A_spatial_sweep20_formal80_20260907/formal80",
+    "reused": true,
+    "run": "reuse_A_warmup5",
+    "runner_warmup_argument": 4,
+    "validation_foreground": 0.6365137027770305,
+    "warmup_epochs": 5
+  },
+  "best": {
+    "best_epoch": 73,
+    "best_iteration": 5600,
+    "elapsed_seconds": 2237.85422873497,
+    "epochs": 80,
+    "gpu": 4,
+    "mean_active_spatial_loss": 1.2888686431543828,
+    "output": "/data_nas/jiangsuiyang/ScribbleCL/independent_A_warmup_sweep80_20260907/warmup10",
+    "reused": false,
+    "run": "warmup10",
+    "runner_warmup_argument": 9,
+    "spatial_active_epochs": 70,
+    "spatial_first_epoch_index": 10,
+    "spatial_weight": 0.01,
+    "test_evaluated": false,
+    "validation_foreground": 0.675945531474768,
+    "validation_inclusive": 0.8357854541147786,
+    "warmup_epochs": 10
+  },
+  "candidate_exitcodes": {
+    "warmup10": 0,
+    "warmup20": 0,
+    "warmup40": 0,
+    "warmup60": 0
+  },
+  "completed_at": "2026-09-07T17:26:47+08:00",
+  "coordinator_exitcode": 0,
+  "epochs": 80,
+  "gpus": [
+    4,
+    5,
+    6,
+    7
+  ],
+  "seed": 42,
+  "selection_uses_test": false,
+  "source_commit": "e4e0142ec094681f29b51dff198c2910082db598",
+  "spatial_weight": 0.01,
+  "status": "complete",
+  "task": "A",
+  "tie_break": "shorter warmup",
+  "warmup_epochs": [
+    5,
+    10,
+    20,
+    40,
+    60
+  ]
+}

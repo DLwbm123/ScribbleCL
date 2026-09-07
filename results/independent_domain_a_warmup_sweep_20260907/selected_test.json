@@ -1,0 +1,40 @@
+{
+  "best_epoch": 73,
+  "complete": true,
+  "selected_run": "warmup10",
+  "selection_uses_test": false,
+  "spatial_weight": 0.01,
+  "task": "A",
+  "test": {
+    "benchmark_mean": 0.6531867577335152,
+    "dice_includes_background": false,
+    "foreground_mean": 0.6531867577335152,
+    "inclusive_mean": 0.8232875366153146,
+    "metric_classes": [
+      0,
+      1
+    ],
+    "per_class": [
+      0.9933883154971143,
+      0.6531867577335152
+    ],
+    "per_patient": [
+      [
+        0.9942257172365612,
+        0.7386099780562747
+      ],
+      [
+        0.9934522864472607,
+        0.6156541237923465
+      ],
+      [
+        0.9924869428075208,
+        0.6052961713519245
+      ]
+    ],
+    "prediction_fg_fraction": 0.022591484917534724
+  },
+  "test_reused": false,
+  "validation_foreground": 0.675945531474768,
+  "warmup_epochs": 10
+}
