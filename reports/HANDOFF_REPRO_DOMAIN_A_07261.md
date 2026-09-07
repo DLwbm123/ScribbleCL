@@ -1,5 +1,7 @@
 # Handoff: tune Domain-A independent training to 0.7261
 
+**Latest outcome (2026-09-07): target achieved.** Following the user's subsequent authorization for a 20-epoch spatial sweep and fresh 80-epoch formal training, independent Domain A reached foreground test Dice **0.7575264500**. Validation selected spatial weight 0.01, enabled from the sixth epoch; the formal checkpoint was selected at epoch index 42. See the [completed sweep and formal result](independent_domain_a_spatial_sweep_20260907.md). This is the authorized tuning follow-up; the 150-epoch protocol below remains the historical alignment reference.
+
 ## Corrections verified on 2026-09-07
 
 The recovered historical `m7v2q` launch command used `medical_continual_segmentation_domain_gptpro/data/sparse_annotations_pattern_f5_b10/domain` and `OMP_NUM_THREADS=4`. The previously documented fastlane sparse root is a different annotation protocol (Domain-A labeled coverage 0.6634%, versus 6.2371% in the historical protocol). Gate 0 alone cannot detect this mismatch because checkpoint evaluation does not read training scribbles. See [alignment evidence](independent_domain_a_stage_alignment_20260907.md).

@@ -1,0 +1,84 @@
+{
+  "batches_per_epoch": 76,
+  "complete": true,
+  "completed_epochs": 80,
+  "dice_includes_background": false,
+  "iteration": 6080,
+  "method": "zs-sequential",
+  "records": [
+    {
+      "best_validation": {
+        "benchmark_mean": 0.6365137027770305,
+        "dice_includes_background": false,
+        "epoch": 42,
+        "foreground_mean": 0.6365137027770305,
+        "inclusive_mean": 0.8154413950285828,
+        "iteration": 3200,
+        "metric_classes": [
+          0,
+          1
+        ],
+        "per_class": [
+          0.9943690872801352,
+          0.6365137027770305
+        ],
+        "per_patient": [
+          [
+            0.9962582421563727,
+            0.7131323606083798
+          ],
+          [
+            0.9924799324038975,
+            0.5598950449456811
+          ]
+        ],
+        "prediction_fg_fraction": 0.01911179562832447
+      },
+      "score": 0.7575264500346256,
+      "task": "A",
+      "test": {
+        "benchmark_mean": 0.7575264500346256,
+        "dice_includes_background": false,
+        "foreground_mean": 0.7575264500346256,
+        "inclusive_mean": 0.8764818904261357,
+        "metric_classes": [
+          0,
+          1
+        ],
+        "per_class": [
+          0.9954373308176456,
+          0.7575264500346256
+        ],
+        "per_patient": [
+          [
+            0.996328961746558,
+            0.8299898130385268
+          ],
+          [
+            0.9965089452558923,
+            0.7927344875885474
+          ],
+          [
+            0.9934740854504867,
+            0.6498550494768025
+          ]
+        ],
+        "prediction_fg_fraction": 0.021880861312624008
+      }
+    }
+  ],
+  "scenario": "domain",
+  "score_split": "test",
+  "scores": [
+    0.7575264500346256
+  ],
+  "seed": 42,
+  "selection_metric": "foreground_mean",
+  "supervision": "scribble",
+  "task_order": [
+    "A"
+  ],
+  "test_evaluated": true,
+  "train_samples": 301,
+  "training_mode": "independent"
+}

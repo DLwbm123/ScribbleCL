@@ -1,0 +1,87 @@
+{
+  "batch_size": 4,
+  "completed_at": "2026-09-07T15:43:39",
+  "coordinator_exitcode": 0,
+  "formal_epochs": 80,
+  "formal_exitcode": 0,
+  "formal_initialization": "fresh_seed42",
+  "formal_result": {
+    "best_epoch": 42,
+    "best_iteration": 3200,
+    "elapsed_seconds": 2274.562350511551,
+    "epochs": 80,
+    "gpu": 6,
+    "mean_active_spatial_loss": 1.3001941297314406,
+    "run": "formal80",
+    "spatial_active_epochs": 75,
+    "spatial_weight": 0.01,
+    "target_difference": 0.03138511936238508,
+    "target_reached": true,
+    "test": {
+      "benchmark_mean": 0.7575264500346256,
+      "dice_includes_background": false,
+      "foreground_mean": 0.7575264500346256,
+      "inclusive_mean": 0.8764818904261357,
+      "metric_classes": [
+        0,
+        1
+      ],
+      "per_class": [
+        0.9954373308176456,
+        0.7575264500346256
+      ],
+      "per_patient": [
+        [
+          0.996328961746558,
+          0.8299898130385268
+        ],
+        [
+          0.9965089452558923,
+          0.7927344875885474
+        ],
+        [
+          0.9934740854504867,
+          0.6498550494768025
+        ]
+      ],
+      "prediction_fg_fraction": 0.021880861312624008
+    },
+    "test_evaluated": true,
+    "validation_foreground": 0.6365137027770305,
+    "validation_inclusive": 0.8154413950285828
+  },
+  "global_weight": 1,
+  "gpus": [
+    6,
+    7,
+    4
+  ],
+  "lr": 0.03,
+  "manual_gradient_decay": 0.0001,
+  "omp_num_threads": 4,
+  "optimizer_weight_decay": 0,
+  "original_source_commit": "530d93c3da927f9daf5d855fcf58a4a73ea529c8",
+  "pce_weight": 1,
+  "runner_warmup_argument": 4,
+  "scenario": "domain",
+  "seed": 42,
+  "selected_spatial_weight": 0.01,
+  "selection_metric": "best_foreground_validation_dice",
+  "selection_uses_test": false,
+  "source_commit": "7cc902b3b0ee882c0ed4f02e90cd293bd784de2b",
+  "sparse_protocol": "sparse_annotations_pattern_f5_b10",
+  "spatial_weights": [
+    0.0,
+    0.01,
+    0.05,
+    0.1,
+    0.3,
+    1.0
+  ],
+  "status": "complete",
+  "sweep_epochs": 20,
+  "task": "A",
+  "validate_every": 200,
+  "warmup_epochs": 5,
+  "workers": 8
+}

@@ -1,6 +1,6 @@
 # Independent Domain-A spatial-loss sweep: 20 epochs, then 80 epochs
 
-Status: **sweep launched at 2026-09-07 14:37:52 CST** in tmux session `independent-a-spatial-sweep`. The first two candidates have completed epoch 0 / iteration 76 on GPUs 6 and 7, with finite losses and no test evaluation. The coordinator will select after all six 20-epoch candidates complete and automatically start the 80-epoch formal run. No final result is claimed yet.
+Status: **complete at 2026-09-07 15:43:39 Asia/Shanghai; target achieved**. All six 20-epoch candidates completed successfully. Validation selected spatial coefficient **0.01**, and the fresh 80-epoch independent Domain-A run achieved **foreground test Dice 0.7575264500**, exceeding the historical target 0.7261413307 by **0.0313851194 (3.14 percentage points)**. Formal training and the active coordinator both exited with code 0.
 
 The user authorized a spatial-loss hyperparameter sweep on Domain A followed by formal training of the best configuration. The target is foreground test Dice around or above 0.7261413307. The initial launch used GPUs 6 and 7. The user subsequently authorized GPU 4; the three-GPU continuation uses GPUs 6, 7, and 4.
 
@@ -31,10 +31,44 @@ Training and ranking reuse the existing runner; the only new code is a small sub
 
 ## Reproduction and artifacts
 
+### Completed results
+
+| Spatial coefficient | Best foreground validation Dice (20 epochs) |
+|---:|---:|
+| 0 | 0.5116036280 |
+| **0.01** | **0.6088808106** |
+| 0.05 | 0.4794269843 |
+| 0.1 | 0.5024610864 |
+| 0.3 | 0.5220990595 |
+| 1.0 | 0.5423627867 |
+
+All sweep results are validation-only. The 0.1 candidate's best score came from the final validation at iteration 1,520; the exported curve includes this result.
+
+| Formal run field | Result |
+|---|---:|
+| Completed epochs / optimizer steps | 80 / 6,080 |
+| PCE / global / spatial weights | 1 / 1 / 0.01 |
+| First spatial-active epoch | 6th (zero-based index 5) |
+| Spatial-active epochs | 75 |
+| Selected checkpoint epoch / iteration | 43rd (index 42) / 3,200 |
+| Best foreground validation Dice | 0.6365137028 |
+| Selected checkpoint foreground test Dice | **0.7575264500** |
+| Selected checkpoint background-inclusive test Dice | 0.8764818904 |
+| Formal elapsed time | 2,274.56 seconds (37.9 minutes) |
+
+The formal run's best validation score also exceeded the sweep winner's 0.6088808106. Formal training restarted from initialization with an 80-epoch polynomial learning-rate schedule, so its intermediate trajectory need not match the 20-epoch sweep. Spatial activation was unchanged: the first five epochs disabled it, and the sixth enabled it.
+
+Public evidence: [sweep summary](../results/independent_domain_a_spatial_sweep_20260907/sweep_summary.json), [formal metrics](../results/independent_domain_a_spatial_sweep_20260907/formal_summary.json), [completion and protocol](../results/independent_domain_a_spatial_sweep_20260907/pipeline_complete.json), [formal manifest](../results/independent_domain_a_spatial_sweep_20260907/formal_manifest.json), [exact formal command](../results/independent_domain_a_spatial_sweep_20260907/formal_command.json), and [validation curves](../results/independent_domain_a_spatial_sweep_20260907/validation_curves.csv).
+
+The selected checkpoint remains at `/data_nas/jiangsuiyang/ScribbleCL/independent_A_spatial_sweep20_formal80_20260907/formal80/best.pt`; `last.pt` is retained alongside it. Both files were present at 103,132,993 bytes at completion verification. The runner evaluated the validation-selected checkpoint once on test; no additional test replay was performed for this report.
+
+### Launch command
+
 ```bash
 cd /home/jiangsuiyang/ScribbleCL_independent_A_20260907
 OMP_NUM_THREADS=4 /home/jiangsuiyang/anaconda3/envs/py38/bin/python -u \
   run_independent_a_spatial_sweep.py \
+  --gpus 6 7 4 \
   --data-root /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data \
   --sparse-root /home/jiangsuiyang/medical_continual_segmentation_domain_gptpro/data/sparse_annotations_pattern_f5_b10/domain \
   --output /data_nas/jiangsuiyang/ScribbleCL/independent_A_spatial_sweep20_formal80_20260907
@@ -42,7 +76,7 @@ OMP_NUM_THREADS=4 /home/jiangsuiyang/anaconda3/envs/py38/bin/python -u \
 
 The original source revision is `530d93c3da927f9daf5d855fcf58a4a73ea529c8`; the GPU-4 continuation changes the coordinator only. Its revision is recorded in `pipeline.json`, alongside the original source revision. The output must not already exist. `pipeline.json` records the source revision, fixed protocol, phase, and completion or failure. Every candidate has a command record, complete log, exit code, train/validation log, best/last checkpoint, and compact result. The chosen configuration is recorded before formal training starts. Data, annotations, checkpoints, and full runtime logs remain on experiment storage; only code and compact public-safe metrics and reports are published.
 
-This is a one-seed, short-budget hyperparameter search. A 20-epoch winner may not remain the strongest configuration after 80 epochs, and the prior aligned run showed that stronger validation performance does not guarantee the target test Dice. No test-based re-selection or target achievement is assumed.
+This is a one-seed result, not a multi-seed robustness claim. Only the validation-selected candidate received formal 80-epoch training, so this does not establish that it would beat every candidate at that budget. The target was achieved for this run without test-based re-selection. The improvement over the prior 150-epoch baseline cannot be attributed solely to spatial loss: the training budget also changed, and CUDA training is not fully deterministic.
 
 ## Adding GPU 4 without restarting active training
 
