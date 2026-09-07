@@ -87,7 +87,8 @@ def main():
                     except Empty:
                         break
                     # Allow CUDA startup allocations to become visible before sharing again.
-                    reserved_until[gpu] = time.monotonic() + 60
+                    reservation = time.monotonic() + 60
+                    reserved_until[gpu] = reservation
             if gpu is None:
                 time.sleep(10)
                 continue
@@ -104,7 +105,8 @@ def main():
             finally:
                 pending.task_done()
                 with allocation_lock:
-                    reserved_until[gpu] = 0.0
+                    if reserved_until[gpu] == reservation:
+                        reserved_until[gpu] = 0.0
         return rows
 
     with ThreadPoolExecutor(max_workers=len(tasks)) as pool:
