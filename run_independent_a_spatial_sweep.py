@@ -6,6 +6,7 @@ import json
 import math
 import os
 from pathlib import Path
+import signal
 import subprocess
 import sys
 import time
@@ -26,6 +27,21 @@ def select_candidate(rows):
     return max(rows, key=lambda r: (r["validation_foreground"], -r["spatial_weight"]))
 
 
+def adopted_exit_status(pid, parent, output):
+    """Read a retained child's exit status while its original coordinator is stopped."""
+    proc = Path("/proc") / str(pid)
+    while True:
+        fields = (proc / "stat").read_text().rsplit(") ", 1)[1].split()
+        if int(fields[1]) != parent:
+            raise RuntimeError("adopted process parent changed")
+        if fields[0] == "Z":
+            return os.waitstatus_to_exitcode(int(fields[49]))
+        command = (proc / "cmdline").read_bytes().replace(b"\0", b" ").decode()
+        if str(output) + " " not in command:
+            raise RuntimeError("adopted process output mismatch")
+        time.sleep(2)
+
+
 def run_training(args, name, weight, epochs, gpu, test):
     output = args.output / name
     command = [
@@ -40,16 +56,24 @@ def run_training(args, name, weight, epochs, gpu, test):
     ]
     if not test:
         command.append("--independent-skip-test")
-    write_json(args.output / (name + ".command.json"), {"gpu": gpu, "command": command})
-    start = time.time()
-    with (args.output / (name + ".log")).open("x") as log:
-        result = subprocess.run(
-            command, cwd=Path(__file__).resolve().parent,
-            env={**os.environ, "CUDA_VISIBLE_DEVICES": str(gpu), "OMP_NUM_THREADS": "4"},
-            stdout=log, stderr=subprocess.STDOUT,
-        )
-    (args.output / (name + ".exitcode")).write_text(str(result.returncode) + "\n")
-    result.check_returncode()
+    if name in args.adopt_running:
+        original = json.loads((args.output / (name + ".command.json")).read_text())
+        assert original == {"gpu": gpu, "command": command}
+        start = (args.output / (name + ".log")).stat().st_mtime
+        returncode = adopted_exit_status(args.adopt_running[name], args.adopt_parent, output)
+    else:
+        write_json(args.output / (name + ".command.json"), {"gpu": gpu, "command": command})
+        start = time.time()
+        with (args.output / (name + ".log")).open("x") as log:
+            result = subprocess.run(
+                command, cwd=Path(__file__).resolve().parent,
+                env={**os.environ, "CUDA_VISIBLE_DEVICES": str(gpu), "OMP_NUM_THREADS": "4"},
+                stdout=log, stderr=subprocess.STDOUT,
+            )
+        returncode = result.returncode
+    (args.output / (name + ".exitcode")).write_text(str(returncode) + "\n")
+    if returncode:
+        raise subprocess.CalledProcessError(returncode, command)
     summary = json.loads((output / "summary.json").read_text())
     manifest = json.loads((output / "manifest.json").read_text())
     record = summary["records"][0]
@@ -99,6 +123,20 @@ def self_check():
         pass
     else:
         raise AssertionError("incomplete sweep must not launch formal training")
+    if sys.platform == "linux":
+        parent = subprocess.Popen([
+            sys.executable, "-c",
+            "import subprocess,sys; child=subprocess.Popen([sys.executable,'-c',"
+            "'import time; time.sleep(1); raise SystemExit(7)', '/tmp/sweep-adoption-check']);"
+            "print(child.pid,flush=True); child.wait()",
+        ], stdout=subprocess.PIPE, text=True)
+        child = int(parent.stdout.readline())
+        os.kill(parent.pid, signal.SIGSTOP)
+        try:
+            assert adopted_exit_status(child, parent.pid, Path("/tmp/sweep-adoption-check")) == 7
+        finally:
+            parent.kill()
+            parent.wait()
     print("selection_self_check_passed")
 
 
@@ -110,10 +148,27 @@ def main():
     parser.add_argument("--data-root", type=Path, required=True)
     parser.add_argument("--sparse-root", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--gpus", type=int, nargs="+", default=[6, 7])
+    parser.add_argument("--adopt-running", nargs="*", default=[], metavar="RUN=PID")
+    parser.add_argument("--adopt-parent", type=int)
     args = parser.parse_args()
+    if not args.gpus or len(set(args.gpus)) != len(args.gpus) or any(gpu < 0 for gpu in args.gpus):
+        parser.error("GPU indices must be distinct and non-negative")
+    args.adopt_running = dict(item.split("=", 1) for item in args.adopt_running)
+    args.adopt_running = {name: int(pid) for name, pid in args.adopt_running.items()}
     if not args.output.is_absolute():
         parser.error("--output must be an absolute path on experiment storage")
-    args.output.mkdir(parents=True, exist_ok=False)
+    if args.adopt_running:
+        if args.adopt_parent is None:
+            parser.error("--adopt-running requires a stopped --adopt-parent")
+        parent = Path("/proc") / str(args.adopt_parent)
+        assert (parent / "stat").read_text().rsplit(") ", 1)[1].split()[0] == "T"
+        assert str(args.output).encode() in (parent / "cmdline").read_bytes()
+        original_protocol = json.loads((args.output / "pipeline.json").read_text())
+        assert original_protocol["status"] == "sweep_running"
+        assert set(args.adopt_running) <= {f"sweep_s{i:02d}" for i in range(len(WEIGHTS))}
+    else:
+        args.output.mkdir(parents=True, exist_ok=False)
     protocol = {
         "status": "sweep_running", "scenario": "domain", "task": "A", "seed": 42,
         "spatial_weights": WEIGHTS, "sweep_epochs": 20, "formal_epochs": 80,
@@ -121,13 +176,16 @@ def main():
         "pce_weight": 1, "global_weight": 1, "lr": 0.03, "batch_size": 4,
         "workers": 8, "omp_num_threads": 4, "validate_every": 200,
         "optimizer_weight_decay": 0, "manual_gradient_decay": 1e-4,
-        "sparse_protocol": args.sparse_root.parent.name, "gpus": [6, 7],
+        "sparse_protocol": args.sparse_root.parent.name, "gpus": args.gpus,
         "selection_metric": "best_foreground_validation_dice",
         "selection_uses_test": False, "formal_initialization": "fresh_seed42",
         "source_commit": subprocess.check_output(
             ["git", "rev-parse", "HEAD"], cwd=Path(__file__).resolve().parent, text=True,
         ).strip(),
     }
+    if args.adopt_running:
+        protocol.update(original_source_commit=original_protocol["source_commit"],
+                        adopted_runs=args.adopt_running, superseded_coordinator=args.adopt_parent)
     write_json(args.output / "pipeline.json", protocol)
     try:
         def worker(gpu, indices):
@@ -135,9 +193,12 @@ def main():
                 run_training(args, f"sweep_s{index:02d}", WEIGHTS[index], 20, gpu, False)
                 for index in indices
             ]
-        with ThreadPoolExecutor(max_workers=2) as pool:
-            futures = [pool.submit(worker, 6, range(0, 6, 2)), pool.submit(worker, 7, range(1, 6, 2))]
+        with ThreadPoolExecutor(max_workers=len(args.gpus)) as pool:
+            futures = [pool.submit(worker, gpu, range(i, len(WEIGHTS), len(args.gpus)))
+                       for i, gpu in enumerate(args.gpus)]
             rows = [row for future in futures for row in future.result()]
+        if args.adopt_running:
+            os.kill(args.adopt_parent, signal.SIGKILL)  # Both retained children have exited and been validated.
         best = select_candidate(rows)
         write_json(args.output / "sweep_summary.json", {
             "complete": True, "selection_uses_test": False,
