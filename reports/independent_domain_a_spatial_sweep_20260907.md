@@ -1,6 +1,6 @@
 # Independent Domain-A spatial-loss sweep: 20 epochs, then 80 epochs
 
-Status: launch preparation. No sweep or formal result is claimed yet.
+Status: **sweep launched at 2026-09-07 14:37:52 CST** in tmux session `independent-a-spatial-sweep`. The first two candidates have completed epoch 0 / iteration 76 on GPUs 6 and 7, with finite losses and no test evaluation. The coordinator will select after all six 20-epoch candidates complete and automatically start the 80-epoch formal run. No final result is claimed yet.
 
 The user authorized a spatial-loss hyperparameter sweep on Domain A followed by formal training of the best configuration. The target is foreground test Dice around or above 0.7261413307. Only GPUs 6 and 7 on the existing experiment host are used.
 
@@ -27,7 +27,7 @@ All six runs must exit successfully, finish 20 epochs, and produce validation-on
 
 After writing `sweep_summary.json`, the coordinator automatically starts a **fresh seed-42, 80-epoch** independent Domain-A run on GPU 6, with the selected coefficient and otherwise unchanged controls. This is a new 6,080-step training schedule, not a continuation of the 20-epoch checkpoint. It selects its checkpoint by foreground validation Dice, then evaluates the selected checkpoint once on test and reports foreground and inclusive Dice. No B–F or other-scenario training is launched.
 
-Training and ranking reuse the existing runner; the only new code is a small subprocess coordinator, [run_independent_a_spatial_sweep.py](../run_independent_a_spatial_sweep.py). Its `--self-check` verifies validation-only ranking, exact-tie handling, and rejection of incomplete candidate sets. A spatial-enabled smoke checks the actual training path before launch.
+Training and ranking reuse the existing runner; the only new code is a small subprocess coordinator, [run_independent_a_spatial_sweep.py](../run_independent_a_spatial_sweep.py). Its `--self-check` verifies validation-only ranking, exact-tie handling, and rejection of incomplete candidate sets. The spatial-enabled smoke passed before launch: with six one-batch epochs and coefficient 1.0, spatial loss activated only at epoch index 5, produced raw spatial loss 0.8234404 and finite total loss 1.4170318, and did not evaluate test data. [Smoke evidence](../results/independent_domain_a_spatial_sweep_20260907/spatial_smoke.json).
 
 ## Reproduction and artifacts
 
@@ -40,6 +40,6 @@ OMP_NUM_THREADS=4 /home/jiangsuiyang/anaconda3/envs/py38/bin/python -u \
   --output /data_nas/jiangsuiyang/ScribbleCL/independent_A_spatial_sweep20_formal80_20260907
 ```
 
-The output must not already exist. `pipeline.json` records the source revision, fixed protocol, phase, and completion or failure. Every candidate has a command record, complete log, exit code, train/validation log, best/last checkpoint, and compact result. The chosen configuration is recorded before formal training starts. Data, annotations, checkpoints, and full runtime logs remain on experiment storage; only code and compact public-safe metrics and reports are published.
+The deployed source revision is `530d93c3da927f9daf5d855fcf58a4a73ea529c8`. The output must not already exist. `pipeline.json` records the source revision, fixed protocol, phase, and completion or failure. Every candidate has a command record, complete log, exit code, train/validation log, best/last checkpoint, and compact result. The chosen configuration is recorded before formal training starts. Data, annotations, checkpoints, and full runtime logs remain on experiment storage; only code and compact public-safe metrics and reports are published.
 
 This is a one-seed, short-budget hyperparameter search. A 20-epoch winner may not remain the strongest configuration after 80 epochs, and the prior aligned run showed that stronger validation performance does not guarantee the target test Dice. No test-based re-selection or target achievement is assumed.
