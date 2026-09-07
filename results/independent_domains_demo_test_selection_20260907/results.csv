@@ -1,0 +1,7 @@
+domain,foreground_demo_selection_dice,inclusive_demo_selection_dice,best_epoch_one_based,best_iteration,train_samples,completed_epochs,total_iterations,exitcode,best_checkpoint_relative_path,last_checkpoint_relative_path
+A,0.736644347343877,0.8657135338077607,22,1600,301,80,6080,0,A/best.pt,A/last.pt
+B,0.5413882084053331,0.7647328572771572,58,2400,168,80,3360,0,B/best.pt,B/last.pt
+C,0.6412886438753289,0.8160824342478672,44,3800,345,80,6960,0,C/best.pt,C/last.pt
+D,0.48036347793971873,0.7374507131200262,62,2600,166,80,3360,0,D/best.pt,D/last.pt
+E,0.6899351195528037,0.8406771360336558,74,10800,582,80,11680,0,E/best.pt,E/last.pt
+F,0.6628073631227723,0.8293936479932237,64,11200,704,80,14080,0,F/best.pt,F/last.pt
