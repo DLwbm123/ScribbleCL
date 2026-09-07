@@ -59,7 +59,7 @@ def run_training(args, name, weight, epochs, gpu, test):
     if name in args.adopt_running:
         original = json.loads((args.output / (name + ".command.json")).read_text())
         assert original == {"gpu": gpu, "command": command}
-        start = (args.output / (name + ".log")).stat().st_mtime
+        start = (args.output / (name + ".command.json")).stat().st_mtime
         returncode = adopted_exit_status(args.adopt_running[name], args.adopt_parent, output)
     else:
         write_json(args.output / (name + ".command.json"), {"gpu": gpu, "command": command})
