@@ -47,6 +47,9 @@ The original `m7v2q` manifest did not record a Git commit, so the exact training
 ## Server paths
 
 ```text
+SSH host:    10.12.208.180
+SSH user:    jiangsuiyang
+SSH port:    22
 Python:       /home/jiangsuiyang/anaconda3/envs/py38/bin/python
 Data root:    /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data
 Sparse root:  /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data/sparse_annotations/domain
@@ -54,7 +57,7 @@ Target ckpt:  /home/jiangsuiyang/q1d7f/runs/m7v2q/s01.pt
 New outputs:  /data_nas/jiangsuiyang/ScribbleCL/repro_domain_A_07261_seed42_<timestamp>
 ```
 
-Keep the source checkout small under `/home`; all new checkpoints and logs must be written under `/data_nas`.
+Connect with `ssh -p 22 jiangsuiyang@10.12.208.180`. The password is supplied out of band and must not be written to source files, logs, reports, or GitHub. Keep the source checkout small under `/home`; all new checkpoints and logs must be written under `/data_nas`.
 
 ## Execution order
 
