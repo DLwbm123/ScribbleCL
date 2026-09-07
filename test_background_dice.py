@@ -23,6 +23,8 @@ def test_dice_macro_average_includes_background():
     assert result["dice_includes_background"] is True
     assert result["metric_classes"] == [0, 1]
     assert np.isclose(result["benchmark_mean"], 1 / 3, atol=1e-5)
+    assert result["inclusive_mean"] == result["benchmark_mean"]
+    assert np.isclose(result["foreground_mean"], 0, atol=1e-5)
 
 
 def test_training_dataset_can_use_dense_labels(tmp_path):

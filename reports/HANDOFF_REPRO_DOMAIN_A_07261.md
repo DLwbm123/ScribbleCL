@@ -1,5 +1,11 @@
 # Handoff: tune Domain-A independent training to 0.7261
 
+## Corrections verified on 2026-09-07
+
+The recovered historical `m7v2q` launch command used `medical_continual_segmentation_domain_gptpro/data/sparse_annotations_pattern_f5_b10/domain` and `OMP_NUM_THREADS=4`. The previously documented fastlane sparse root is a different annotation protocol (Domain-A labeled coverage 0.6634%, versus 6.2371% in the historical protocol). Gate 0 alone cannot detect this mismatch because checkpoint evaluation does not read training scribbles. See [alignment evidence](independent_domain_a_stage_alignment_20260907.md).
+
+The reference sets SGD `weight_decay=0` but manually adds `1e-4 * parameter` to gradients at **all** stages, including A. Preserve both settings for parity; do not describe this as zero effective L2 regularization.
+
 ## Objective
 
 Improve the **scribble-supervised independent Domain-A experiment** until its foreground-only test Dice reproduces or approaches **`0.7261413306722405`** with seed 42. The historical ZS-GPM stage-A run `m7v2q` is an executable reference for the model, optimizer, loss, data order, validation, and evaluation code. It is not the final experiment label.
@@ -37,7 +43,7 @@ This is the A-to-A current-task score after training A, not the final six-stage 
 | tuned ZS independent | PCE/global/spatial = 0.5/1/0.05, 80 epochs | 0.2565 |
 | matched-loss ZS independent | PCE/global/spatial = 1/1/0, 80 epochs | 0.0761 |
 
-The last run showed that disabling spatial loss alone does not solve the problem. It still differed from the ZS-GPM A reference in training length and optimizer behavior: the independent loop used 80 epochs and weight decay `1e-4`, while ZS-GPM used 150 epochs and weight decay `0`.
+The last run showed that disabling spatial loss alone does not solve the problem. It used 80 epochs rather than 150. The historical sparse-annotation root also differs from the root originally supplied in this handoff. SGD weight decay alone is not an established explanation: stage-A GPM manually adds the equivalent L2 term before its zero-decay optimizer step.
 
 ## Exact reference protocol
 
@@ -50,7 +56,10 @@ The last run showed that disabling spatial loss alone does not solve the problem
 | Epochs | 150 |
 | Batch size | 4 |
 | Learning rate | 0.03, polynomial decay |
-| Optimizer | SGD, momentum 0.9, weight decay 0 |
+| Optimizer | SGD, momentum 0.9, optimizer weight decay 0 |
+| Manual gradient decay | `1e-4 * parameter`, including stage A |
+| CPU threads | `OMP_NUM_THREADS=4` |
+| Scribble protocol | `sparse_annotations_pattern_f5_b10/domain` |
 | PCE/global/spatial | 1.0 / 1.0 / 0.0 |
 | Validation interval | 200 iterations |
 | GPM threshold/step/examples | 0.97 / 0.001 / 16 |
@@ -67,7 +76,7 @@ SSH user:     jiangsuiyang
 SSH port:     22
 Python:       /home/jiangsuiyang/anaconda3/envs/py38/bin/python
 Data root:    /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data
-Sparse root:  /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data/sparse_annotations/domain
+Sparse root:  /home/jiangsuiyang/medical_continual_segmentation_domain_gptpro/data/sparse_annotations_pattern_f5_b10/domain
 Target ckpt:  /home/jiangsuiyang/q1d7f/runs/m7v2q/s01.pt
 New outputs:  /data_nas/jiangsuiyang/ScribbleCL/tune_independent_A_07261_seed42_<timestamp>
 ```
@@ -100,7 +109,7 @@ This confirms that the pinned evaluator, data split, and stored checkpoint recov
 
 ```bash
 cd /home/jiangsuiyang/ScribbleCL_repro_07261
-CUDA_VISIBLE_DEVICES=4 /home/jiangsuiyang/anaconda3/envs/py38/bin/python - <<'PY'
+CUDA_VISIBLE_DEVICES=6 OMP_NUM_THREADS=4 /home/jiangsuiyang/anaconda3/envs/py38/bin/python - <<'PY'
 from pathlib import Path
 import torch
 from runner_core import TASKS, H5Slices, _build_model, _loader, evaluate
@@ -131,9 +140,9 @@ This is the first independent candidate because A has no earlier task and GPM do
 ```bash
 run_root=/data_nas/jiangsuiyang/ScribbleCL/tune_independent_A_07261_seed42_$(date +%Y%m%d_%H%M%S)
 tmux new-session -d -s tune-independent-a-07261 "cd /home/jiangsuiyang/ScribbleCL_repro_07261 && \
-CUDA_VISIBLE_DEVICES=4 /home/jiangsuiyang/anaconda3/envs/py38/bin/python -u main.py --setting-run \
+CUDA_VISIBLE_DEVICES=6 OMP_NUM_THREADS=4 /home/jiangsuiyang/anaconda3/envs/py38/bin/python -u main.py --setting-run \
   --data-root /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data \
-  --sparse-root /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data/sparse_annotations/domain \
+  --sparse-root /home/jiangsuiyang/medical_continual_segmentation_domain_gptpro/data/sparse_annotations_pattern_f5_b10/domain \
   --output $run_root --device cuda:0 --seed 42 --max-task 1 \
   --epochs-per-task 150 --batch-size 4 --lr 0.03 --workers 8 \
   --validate-every 200 --method zs-gpm --pce-loss-weight 1.0 \
@@ -152,7 +161,7 @@ If the oracle reproduces `0.7261`, use it to correct the current independent pat
 Preferred minimal fix:
 
 1. Route single-task independent ZS training through the same ordinary stage-training implementation used by ZS-GPM.
-2. For an A-only run, preserve stage index 0, SGD weight decay 0, 150 epochs, loader seed 42, PCE/global/spatial `1/1/0`, and validation every 200 iterations.
+2. For an A-only run, preserve stage index 0, SGD weight decay 0 plus the reference manual gradient decay `1e-4`, 150 epochs, loader seed 42, PCE/global/spatial `1/1/0`, and validation every 200 iterations.
 3. Do not copy another training loop. The existing duplicated independent loop is the suspected source of protocol drift.
 4. Add only a compact result adapter if `independent_scores.json` is required by downstream RMA calculation.
 
@@ -160,7 +169,7 @@ Before a full 150-epoch rerun, compare one fixed batch and one optimizer step be
 
 ### 5. Tune only if exact parity remains below target
 
-Use validation only. Start from the `1/1/0`, LR 0.03, weight-decay 0 anchor. Change one small group at a time; do not reintroduce spatial loss until the oracle-matched baseline works. A broad A--F sweep is out of scope until A reaches the target range.
+Use validation only. Start from the `1/1/0`, LR 0.03, optimizer-weight-decay 0 and manual-gradient-decay `1e-4` anchor. Change one small group at a time; do not reintroduce spatial loss until the oracle-matched baseline works. A broad A--F sweep is out of scope until A reaches the target range.
 
 ## Completion and success gates
 

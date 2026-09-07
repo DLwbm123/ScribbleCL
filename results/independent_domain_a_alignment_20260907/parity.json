@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "cudnn_deterministic": true,
+  "train_samples": 301,
+  "batches_per_epoch": 76,
+  "max_iterations": 11400,
+  "initial_max_abs_diff": 0.0,
+  "initial_oracle_repeat_max_abs_diff": 0.0,
+  "gradients_max_abs_diff": 0.0,
+  "gradients_oracle_repeat_max_abs_diff": 0.0,
+  "updated_max_abs_diff": 0.0,
+  "updated_oracle_repeat_max_abs_diff": 0.0,
+  "pce_loss": {
+    "oracle": 0.7386324405670166,
+    "independent": 0.7386324405670166
+  },
+  "global_loss": {
+    "oracle": 0.17883282899856567,
+    "independent": 0.17883282899856567
+  },
+  "total_loss": {
+    "oracle": 0.9174652695655823,
+    "independent": 0.9174652695655823
+  },
+  "lr_before": {
+    "oracle": 0.03,
+    "independent": 0.03
+  },
+  "lr_after": {
+    "oracle": 0.029997631568559224,
+    "independent": 0.029997631568559224
+  },
+  "optimizer_weight_decay": {
+    "oracle": 0.0,
+    "independent": 0.0
+  },
+  "manual_gradient_decay": 0.0001,
+  "scope": "one fixed augmented training batch; no test access; real shared loops and optimizer",
+  "absolute_tolerances": {
+    "initial": 0.0,
+    "gradients": 1e-05,
+    "updated": 1e-06
+  }
+}

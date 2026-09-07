@@ -513,6 +513,8 @@ def evaluate(
     values = np.asarray(per_patient, dtype=float)
     result = {
         "benchmark_mean": float(values.mean()),
+        "inclusive_mean": float(values.mean()),
+        "foreground_mean": float(values[:, [i for i, label in enumerate(metric_classes) if label != 0]].mean()),
         "dice_includes_background": True,
         "metric_classes": list(metric_classes),
         "per_class": values.mean(axis=0).tolist(),
@@ -833,7 +835,7 @@ def main(project_scenario: str) -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--device", default="cuda:0")
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--epochs-per-task", type=int, default=80)
+    parser.add_argument("--epochs-per-task", type=int)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--lr", type=float, default=0.03)
     parser.add_argument("--workers", type=int, default=8)
@@ -866,6 +868,13 @@ def main(project_scenario: str) -> None:
     parser.add_argument("--independent-skip-test", action="store_true")
     parser.add_argument("--independent-scores", type=Path)
     args = parser.parse_args()
+    independent_a = (
+        args.independent_reference and project_scenario == "domain"
+        and args.independent_task == 1 and args.method == "zs-sequential"
+        and args.independent_supervision == "scribble"
+    )
+    if args.epochs_per_task is None:
+        args.epochs_per_task = 150 if independent_a else 80
     use_zs = args.method.startswith("zs-")
     use_ewc = args.method.endswith("-ewc")
     use_gpm = args.method.endswith("-gpm")
@@ -939,9 +948,11 @@ def main(project_scenario: str) -> None:
     np.random.seed(args.seed)
     random.seed(args.seed)
     device = torch.device(args.device)
-    if args.independent_reference:
+    if args.independent_reference and not independent_a:
         _run_independent_references(args, tasks, device, project_scenario)
         return
+    if independent_a:
+        tasks, last_stage = tasks[:1], 0
     model = _build_model(project_scenario)
     model.to(device)
     ewc = OnlineEWC(args.ewc_lambda, args.ewc_gamma) if use_ewc else None
@@ -989,8 +1000,13 @@ def main(project_scenario: str) -> None:
         "validate_every": args.validate_every,
         "task_count": last_stage + 1,
         "task_order": [task.code for task in tasks[:last_stage + 1]],
-        "dice_includes_background": True,
-        "training_mode": "joint" if use_joint else "continual",
+        "dice_includes_background": not independent_a,
+        "training_mode": "independent" if independent_a else "joint" if use_joint else "continual",
+        "training_implementation": "shared_stage_loop",
+        "selection_metric": "foreground_mean" if independent_a else "benchmark_mean",
+        "optimizer_weight_decay": 0.0 if use_gpm or independent_a else 1e-4,
+        "manual_gradient_decay": 1e-4 if use_gpm or independent_a else 0.0,
+        "test_evaluated": not independent_a,
         "test_for_selection": False,
         "history_images": use_der or use_derpp,
         "replay": use_der or use_derpp,
@@ -1023,6 +1039,9 @@ def main(project_scenario: str) -> None:
         "status": "running",
     }
     manifest_path = args.output / "manifest.json"
+    if independent_a:
+        manifest["sparse_annotation_protocol"] = args.sparse_root.parent.name
+        manifest["sparse_archive"] = _sparse_path(args.sparse_root, project_scenario, tasks[0], args.seed).name
     manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
     matrix = np.full((1 if use_joint else len(tasks), len(tasks)), np.nan)
     stage_rows = []
@@ -1030,7 +1049,7 @@ def main(project_scenario: str) -> None:
     gpm_rows = []
     train_log = args.output / "train.jsonl"
     random_scores = None
-    if project_scenario == "domain" and not use_joint:
+    if project_scenario == "domain" and not use_joint and not independent_a:
         random_scores = [
             _evaluate_task(
                 model, project_scenario, task, index, args.data_root,
@@ -1080,7 +1099,7 @@ def main(project_scenario: str) -> None:
             # For GPM, weight decay is folded into gradients before projection.
             # Letting SGD add it afterward would move convolutional kernels back
             # into protected directions and violate the projection constraint.
-            weight_decay=0.0 if use_gpm else 1e-4,
+            weight_decay=0.0 if use_gpm or independent_a else 1e-4,
         )
         batches_per_epoch = len(train_loader)
         if args.max_train_batches is not None:
@@ -1088,14 +1107,17 @@ def main(project_scenario: str) -> None:
         max_iterations = batches_per_epoch * args.epochs_per_task
         iteration = 0
         best = {"benchmark_mean": -1.0, "epoch": None, "iteration": None}
-        best_path = args.output / f"s{stage + 1:02d}_best.pt"
+        best_path = args.output / ("best.pt" if independent_a else f"s{stage + 1:02d}_best.pt")
         task_id = stage if project_scenario == "organ" else None
         classes = model.output_channels(stage)
 
         def validate_current() -> dict:
             if use_joint:
                 return _evaluate_joint(model, tasks, args.data_root, "val", args.batch_size, device)
-            return evaluate(model, val_loader, val.ends, device, task_id, task.classes)
+            score = evaluate(model, val_loader, val.ends, device, task_id, task.classes)
+            if independent_a:
+                score = {**score, "benchmark_mean": score["foreground_mean"], "dice_includes_background": False}
+            return score
 
         with train_log.open("a") as stream:
             for epoch in range(args.epochs_per_task):
@@ -1168,7 +1190,8 @@ def main(project_scenario: str) -> None:
                     if not torch.isfinite(loss):
                         raise FloatingPointError("non-finite training loss")
                     loss.backward()
-                    if use_gpm:
+                    # Stage A of the reference also adds L2 before SGD (whose decay is zero).
+                    if use_gpm or independent_a:
                         with torch.no_grad():
                             for parameter in model.parameters():
                                 if parameter.grad is not None:
@@ -1258,7 +1281,36 @@ def main(project_scenario: str) -> None:
         if final_validation["benchmark_mean"] > best["benchmark_mean"]:
             best = {**final_validation, "epoch": args.epochs_per_task - 1, "iteration": iteration}
             torch.save(model.state_dict(), best_path)
+        if independent_a:
+            torch.save(model.state_dict(), args.output / "last.pt")
         model.load_state_dict(torch.load(best_path, map_location=device))
+        if independent_a:
+            test = None
+            if not args.independent_skip_test:
+                test = _evaluate_task(
+                    model, project_scenario, task, 0, args.data_root, "test", args.batch_size, device,
+                )
+                test = {**test, "benchmark_mean": test["foreground_mean"], "dice_includes_background": False}
+            score = best["foreground_mean"] if test is None else test["foreground_mean"]
+            summary = {
+                "scenario": project_scenario, "method": args.method, "training_mode": "independent",
+                "supervision": "scribble", "seed": args.seed, "task_order": [task.code],
+                "selection_metric": "foreground_mean", "dice_includes_background": False,
+                "score_split": "val" if test is None else "test", "test_evaluated": test is not None,
+                "scores": [score], "records": [{"task": task.code, "score": score,
+                    "test": test, "best_validation": best}],
+                "train_samples": len(train), "batches_per_epoch": batches_per_epoch,
+                "completed_epochs": args.epochs_per_task, "iteration": iteration, "complete": True,
+            }
+            for filename in ("independent_scores.json", "summary.json"):
+                (args.output / filename).write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n")
+            manifest["status"] = "complete"
+            manifest["test_evaluated"] = test is not None
+            manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
+            train.close()
+            val.close()
+            print(json.dumps(summary, indent=2, sort_keys=True))
+            return
         torch.save(model.state_dict(), args.output / f"s{stage + 1:02d}.pt")
         fisher_summary = None
         if use_ewc:

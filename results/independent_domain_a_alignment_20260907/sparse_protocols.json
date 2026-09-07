@@ -1,0 +1,30 @@
+[
+  {
+    "shape": [
+      301,
+      256,
+      256
+    ],
+    "label_counts": {
+      "-100": 19595474,
+      "0": 101136,
+      "1": 29726
+    },
+    "annotated_fraction": 0.0066338726056374584,
+    "protocol": "sparse_annotations/domain"
+  },
+  {
+    "shape": [
+      301,
+      256,
+      256
+    ],
+    "label_counts": {
+      "-100": 18495978,
+      "0": 1087492,
+      "1": 142866
+    },
+    "annotated_fraction": 0.062371339512821845,
+    "protocol": "sparse_annotations_pattern_f5_b10/domain"
+  }
+]
