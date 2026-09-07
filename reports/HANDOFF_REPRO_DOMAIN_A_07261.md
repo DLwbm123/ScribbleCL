@@ -1,65 +1,86 @@
-# Handoff: reproduce Domain A foreground Dice 0.7261
+# Handoff: tune Domain-A independent training to 0.7261
 
-## Single objective
+## Objective
 
-Reproduce the **foreground-only test Dice `0.7261413306722405`** obtained on Domain A after stage 1 of the ZS-GPM continual run `m7v2q` (seed 42). Do not optimize background-inclusive Dice and do not substitute an independent-training result.
+Improve the **scribble-supervised independent Domain-A experiment** until its foreground-only test Dice reproduces or approaches **`0.7261413306722405`** with seed 42. The historical ZS-GPM stage-A run `m7v2q` is an executable reference for the model, optimizer, loss, data order, validation, and evaluation code. It is not the final experiment label.
+
+Do not optimize the test split. Tune and select checkpoints using foreground validation Dice; evaluate the test split once after configuration selection. Continue reporting both foreground and background-inclusive Dice.
+
+## Why ZS-GPM stage A is the right reference
+
+The target is `results/domain_zs_gpm/summary.json -> matrix[0][0]`. At stage A:
+
+- no previous task has been learned, so there is no cross-domain warm start;
+- GPM gradient projection is applied only when `stage > 0`, so it does not modify A training;
+- the GPM representation is collected only after the best A checkpoint is selected;
+- therefore the A result is effectively a strong independent Domain-A run through the ordinary continual training path.
+
+The main useful difference is that the ZS-GPM path is the known-good training implementation. The current `_run_independent_references` path is a separate duplicated loop and has not reproduced its behavior.
 
 ## Target evidence
 
 - Public result: `results/domain_zs_gpm/summary.json`, `matrix[0][0]`.
-- Server result directory: `/home/jiangsuiyang/q1d7f/runs/m7v2q`.
-- Existing target checkpoint: `/home/jiangsuiyang/q1d7f/runs/m7v2q/s01.pt`.
-- Best validation: `0.7049937620651452`, epoch 128, iteration 9800.
-- Test Dice by patient: `0.8250721886456398`, `0.74915653620881`, `0.6041952671622719`.
+- Server run: `/home/jiangsuiyang/q1d7f/runs/m7v2q`.
+- Existing A checkpoint: `/home/jiangsuiyang/q1d7f/runs/m7v2q/s01.pt`.
+- Foreground test Dice: `0.7261413306722405`.
+- Best validation Dice: `0.7049937620651452`, epoch 128, iteration 9800.
+- Test patient Dice: `0.8250721886456398`, `0.74915653620881`, `0.6041952671622719`.
 - Test prediction foreground fraction: `0.0211731441437252`.
 
-The target is the A-to-A diagonal entry immediately after learning A. It is not the final six-domain A-Dice of ZS-GPM (`0.3246786311`).
+This is the A-to-A current-task score after training A, not the final six-stage ZS-GPM A-Dice.
 
-## Exact recorded protocol
+## Failed independent references to retain as negative controls
+
+| Run | Configuration | A foreground Dice |
+|---|---|---:|
+| PCE independent | PCE only, 80 epochs | 0.0991 |
+| tuned ZS independent | PCE/global/spatial = 0.5/1/0.05, 80 epochs | 0.2565 |
+| matched-loss ZS independent | PCE/global/spatial = 1/1/0, 80 epochs | 0.0761 |
+
+The last run showed that disabling spatial loss alone does not solve the problem. It still differed from the ZS-GPM A reference in training length and optimizer behavior: the independent loop used 80 epochs and weight decay `1e-4`, while ZS-GPM used 150 epochs and weight decay `0`.
+
+## Exact reference protocol
 
 | Field | Value |
 |---|---|
-| Scenario/method | Domain-CL, `zs-gpm` |
-| Task | A only for the reproduction |
-| Supervision | frozen seed-42 scribbles |
+| Scenario/task | Domain-CL, A |
+| Method used as reference | `zs-gpm`, stage A only |
+| Supervision | seed-42 scribbles |
 | Seed | 42 |
 | Epochs | 150 |
 | Batch size | 4 |
 | Learning rate | 0.03, polynomial decay |
-| Optimizer | SGD, momentum 0.9 |
-| PCE/global/spatial weights | 1.0 / 1.0 / 0.0 |
+| Optimizer | SGD, momentum 0.9, weight decay 0 |
+| PCE/global/spatial | 1.0 / 1.0 / 0.0 |
 | Validation interval | 200 iterations |
-| GPM threshold | 0.97 |
-| GPM threshold step | 0.001 |
-| GPM examples | 16 |
-| GPM max patches/layer | 4096 |
-| GPM max matrix elements | 4,000,000 |
-| Training samples/batches | 301 slices, 76 batches/epoch, 11,400 iterations |
+| GPM threshold/step/examples | 0.97 / 0.001 / 16 |
+| GPM patch/matrix limits | 4096 / 4,000,000 |
+| Training size | 301 slices, 76 batches/epoch, 11,400 iterations |
 
-Recorded server environment currently available at `/home/jiangsuiyang/anaconda3/envs/py38/bin/python`: Python 3.10.6, PyTorch 2.2.1+cu121, NumPy 1.26.4, h5py 3.16.0, SciPy 1.13.0. Reuse this environment; do not reinstall PyTorch.
+Reuse `/home/jiangsuiyang/anaconda3/envs/py38/bin/python`: Python 3.10.6, PyTorch 2.2.1+cu121, NumPy 1.26.4, h5py 3.16.0, and SciPy 1.13.0. Do not reinstall PyTorch or create another environment.
 
-## Critical protocol warning
-
-Do **not** use current `main` for the first reproduction. Commit `6b6ff65` changed the shared evaluator to include background, which changes validation checkpoint selection and `benchmark_mean`. Use public source commit `2cdb1bec5939d8b6b2399413434b8b3aaa9ea7c2`, the last canonical source before that metric change. Its continual training path matches the recorded foreground-only protocol.
-
-The original `m7v2q` manifest did not record a Git commit, so the exact training-source SHA is unavailable. The pinned commit above is the strongest preserved source candidate, not a claim of byte-identical provenance.
-
-## Server paths
+## Server and storage
 
 ```text
-SSH host:    10.12.208.180
-SSH user:    jiangsuiyang
-SSH port:    22
+SSH host:     10.12.208.180
+SSH user:     jiangsuiyang
+SSH port:     22
 Python:       /home/jiangsuiyang/anaconda3/envs/py38/bin/python
 Data root:    /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data
 Sparse root:  /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data/sparse_annotations/domain
 Target ckpt:  /home/jiangsuiyang/q1d7f/runs/m7v2q/s01.pt
-New outputs:  /data_nas/jiangsuiyang/ScribbleCL/repro_domain_A_07261_seed42_<timestamp>
+New outputs:  /data_nas/jiangsuiyang/ScribbleCL/tune_independent_A_07261_seed42_<timestamp>
 ```
 
-Connect with `ssh -p 22 jiangsuiyang@10.12.208.180`. The password is supplied out of band and must not be written to source files, logs, reports, or GitHub. Keep the source checkout small under `/home`; all new checkpoints and logs must be written under `/data_nas`.
+Connect with `ssh -p 22 jiangsuiyang@10.12.208.180`. The password is supplied out of band and must not be written into code, logs, reports, or GitHub. Source checkouts may remain under `/home`; all new checkpoints and complete logs go under `/data_nas`.
 
-## Execution order
+## Metric and code-version warning
+
+Commit `6b6ff65` changed the shared evaluator to include background, altering `benchmark_mean` and checkpoint selection. For the initial parity run, use public commit `2cdb1bec5939d8b6b2399413434b8b3aaa9ea7c2`, whose ordinary continual path uses foreground-only Domain Dice like `m7v2q`.
+
+The original manifest did not record a source SHA. This commit is the strongest preserved source candidate, not proof of byte-identical provenance. After parity is established, port the minimal independent fix to current `main`, keeping explicit foreground checkpoint selection and dual-metric reporting.
+
+## Required execution order
 
 ### 1. Create an isolated pinned checkout
 
@@ -71,11 +92,11 @@ cd /home/jiangsuiyang/ScribbleCL_repro_07261
 git checkout 2cdb1bec5939d8b6b2399413434b8b3aaa9ea7c2
 ```
 
-If that checkout already exists, verify its current commit instead of cloning again.
+If the checkout already exists, verify its current commit instead of cloning again.
 
 ### 2. Gate 0: replay the preserved checkpoint
 
-Run this before retraining. It must recover the target metric from the existing `s01.pt` using the pinned foreground-only evaluator.
+This confirms that the pinned evaluator, data split, and stored checkpoint recover the target before any new training.
 
 ```bash
 cd /home/jiangsuiyang/ScribbleCL_repro_07261
@@ -101,15 +122,15 @@ assert abs(score["benchmark_mean"] - 0.7261413306722405) < 1e-8
 PY
 ```
 
-If Gate 0 fails, stop: the mismatch is evaluation/data/source related, and retraining would not be interpretable.
+If Gate 0 fails, stop and resolve the evaluator, data, or source mismatch before training.
 
-### 3. Train only stage A through the ordinary continual path
+### 3. Run the ZS-GPM stage-A oracle
 
-Use one free GPU; GPU 4 is shown below only as the preferred default. Confirm it is idle first.
+This is the first independent candidate because A has no earlier task and GPM does not project gradients at stage 0.
 
 ```bash
-run_root=/data_nas/jiangsuiyang/ScribbleCL/repro_domain_A_07261_seed42_$(date +%Y%m%d_%H%M%S)
-tmux new-session -d -s repro-domain-a-07261 "cd /home/jiangsuiyang/ScribbleCL_repro_07261 && \
+run_root=/data_nas/jiangsuiyang/ScribbleCL/tune_independent_A_07261_seed42_$(date +%Y%m%d_%H%M%S)
+tmux new-session -d -s tune-independent-a-07261 "cd /home/jiangsuiyang/ScribbleCL_repro_07261 && \
 CUDA_VISIBLE_DEVICES=4 /home/jiangsuiyang/anaconda3/envs/py38/bin/python -u main.py --setting-run \
   --data-root /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data \
   --sparse-root /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data/sparse_annotations/domain \
@@ -122,27 +143,34 @@ CUDA_VISIBLE_DEVICES=4 /home/jiangsuiyang/anaconda3/envs/py38/bin/python -u main
   > ${run_root}_coordinator.log 2>&1"
 ```
 
-`--max-task 1` preserves the stage-A training path while avoiding unnecessary B--F training.
+Do not train B--F. The only target is a strong independent A result.
+
+### 4. Make the independent implementation match the oracle
+
+If the oracle reproduces `0.7261`, use it to correct the current independent path instead of launching a broad coefficient sweep.
+
+Preferred minimal fix:
+
+1. Route single-task independent ZS training through the same ordinary stage-training implementation used by ZS-GPM.
+2. For an A-only run, preserve stage index 0, SGD weight decay 0, 150 epochs, loader seed 42, PCE/global/spatial `1/1/0`, and validation every 200 iterations.
+3. Do not copy another training loop. The existing duplicated independent loop is the suspected source of protocol drift.
+4. Add only a compact result adapter if `independent_scores.json` is required by downstream RMA calculation.
+
+Before a full 150-epoch rerun, compare one fixed batch and one optimizer step between the independent path and the stage-A oracle: initial state, total/PCE/global loss, gradients, updated parameters, and learning rate must agree within numerical tolerance. This is a diagnostic parity check, not a new training metric.
+
+### 5. Tune only if exact parity remains below target
+
+Use validation only. Start from the `1/1/0`, LR 0.03, weight-decay 0 anchor. Change one small group at a time; do not reintroduce spatial loss until the oracle-matched baseline works. A broad A--F sweep is out of scope until A reaches the target range.
 
 ## Completion and success gates
 
-Require all of the following:
-
-1. The tmux session and scoped Python process have exited normally; no traceback or non-finite/CUDA OOM error appears.
-2. `train.jsonl` reaches epoch 149 and iteration 11,400.
-3. `s01_best.pt`, `s01.pt`, `summary.json`, `stages.json`, and `matrix.csv` exist and are readable.
-4. `summary.json -> matrix[0][0]` is foreground-only Domain-A test Dice.
-5. Exact reproduction target: `abs(matrix[0][0] - 0.7261413306722405) < 1e-8`.
-6. If GPU nondeterminism prevents exact equality, record it as a near reproduction only when Dice is within `0.7261 ± 0.02`; do not relabel it exact.
-
-## If retraining misses the target
-
-Do not start a coefficient sweep immediately.
-
-- Gate 0 passes but retraining fails: compare RNG/determinism, augmentation order, worker count, environment, and the missing original source-SHA provenance.
-- Gate 0 fails: resolve evaluator, data split, checkpoint compatibility, or code revision first.
-- Do not use `_run_independent_references`; the two completed independent A runs (`0.2565` tuned and `0.0761` matched-loss) used a different execution path and are not reproductions of `m7v2q` stage A.
+1. Gate 0 reproduces the existing checkpoint score exactly.
+2. The new A run reaches epoch 149 and iteration 11,400 and writes the best/final checkpoint and summary artifacts.
+3. Primary metric is foreground-only Domain-A test Dice.
+4. Exact target: `abs(Dice - 0.7261413306722405) < 1e-8`.
+5. If nondeterministic GPU kernels prevent exact equality, label the result a near reproduction only when Dice is within `0.7261 ± 0.02`.
+6. The final accepted run must use the independent/single-task interface or be explicitly documented as the stage-A single-task oracle; do not mix it with B--F training.
 
 ## Closeout
 
-After completion, publish the exact command/config, compact log summary, foreground result, validation-selected epoch, and comparison with `0.7261413306722405` to the public `DLwbm123/ScribbleCL` repository. Keep checkpoints, full logs, data, sparse annotations, and credentials off GitHub.
+Publish the minimal code change, exact command/config, compact log summary, foreground and inclusive Dice, validation-selected epoch, and comparison with `0.7261413306722405` to the public `DLwbm123/ScribbleCL` repository. Keep credentials, data, sparse annotations, checkpoints, and full logs off GitHub.
