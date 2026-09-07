@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "smoke_epochs": 6,
+  "max_train_batches": 1,
+  "spatial_weight": 1.0,
+  "runner_warmup_argument": 4,
+  "spatial_active_epoch_indices": [
+    5
+  ],
+  "spatial_loss": 0.823440432548523,
+  "total_loss": 1.4170317649841309,
+  "test_evaluated": false
+}

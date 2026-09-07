@@ -1,0 +1,45 @@
+# Independent Domain-A spatial-loss sweep: 20 epochs, then 80 epochs
+
+Status: launch preparation. No sweep or formal result is claimed yet.
+
+The user authorized a spatial-loss hyperparameter sweep on Domain A followed by formal training of the best configuration. The target is foreground test Dice around or above 0.7261413307. Only GPUs 6 and 7 on the existing experiment host are used.
+
+## Fixed protocol and candidates
+
+Reuse the independent interface and shared stage-training implementation from `dd490ae`. Keep the corrected historical `sparse_annotations_pattern_f5_b10/domain` scribbles, seed 42, PCE/global weights 1/1, batch size 4, LR 0.03 with polynomial decay, SGD momentum 0.9, optimizer weight decay 0 plus manual gradient decay 1e-4, 8 workers, and `OMP_NUM_THREADS=4`. No old checkpoint is loaded.
+
+| Candidate | Spatial coefficient | GPU | Sweep epochs |
+|---|---:|---:|---:|
+| sweep_s00 | 0 | 6 | 20 |
+| sweep_s01 | 0.01 | 7 | 20 |
+| sweep_s02 | 0.05 | 6 | 20 |
+| sweep_s03 | 0.1 | 7 | 20 |
+| sweep_s04 | 0.3 | 6 | 20 |
+| sweep_s05 | 1.0 | 7 | 20 |
+
+Each GPU runs its three candidates sequentially, with one training process per GPU. Each sweep run has 301 training slices, 76 batches per epoch, and 1,520 optimizer steps. Validation occurs every 200 steps plus the final validation.
+
+The runner's default spatial warmup would disable spatial loss for every epoch in a 20-epoch sweep. Set `--zs-spatial-warmup-epochs 4`: the existing condition is `epoch > 4`, so spatial loss starts at zero-based epoch 5, after five warmup epochs. Positive-weight candidates have 15 spatial-active epochs. Keep this same five-epoch warmup in formal training; do not silently change the chosen schedule between sweep and formal.
+
+## Selection and automatic formal training
+
+All six runs must exit successfully, finish 20 epochs, and produce validation-only results. The coordinator checks that spatial loss actually activated and was nonzero for positive-weight candidates. It ranks the six configurations by their **best foreground validation Dice**, breaking exact ties in favor of the smaller coefficient. Sweep runs use `--independent-skip-test`; no test metrics are available to the selector.
+
+After writing `sweep_summary.json`, the coordinator automatically starts a **fresh seed-42, 80-epoch** independent Domain-A run on GPU 6, with the selected coefficient and otherwise unchanged controls. This is a new 6,080-step training schedule, not a continuation of the 20-epoch checkpoint. It selects its checkpoint by foreground validation Dice, then evaluates the selected checkpoint once on test and reports foreground and inclusive Dice. No B–F or other-scenario training is launched.
+
+Training and ranking reuse the existing runner; the only new code is a small subprocess coordinator, [run_independent_a_spatial_sweep.py](../run_independent_a_spatial_sweep.py). Its `--self-check` verifies validation-only ranking, exact-tie handling, and rejection of incomplete candidate sets. A spatial-enabled smoke checks the actual training path before launch.
+
+## Reproduction and artifacts
+
+```bash
+cd /home/jiangsuiyang/ScribbleCL_independent_A_20260907
+OMP_NUM_THREADS=4 /home/jiangsuiyang/anaconda3/envs/py38/bin/python -u \
+  run_independent_a_spatial_sweep.py \
+  --data-root /home/jiangsuiyang/medical_continual_segmentation_domain_fastlane/data \
+  --sparse-root /home/jiangsuiyang/medical_continual_segmentation_domain_gptpro/data/sparse_annotations_pattern_f5_b10/domain \
+  --output /data_nas/jiangsuiyang/ScribbleCL/independent_A_spatial_sweep20_formal80_20260907
+```
+
+The output must not already exist. `pipeline.json` records the source revision, fixed protocol, phase, and completion or failure. Every candidate has a command record, complete log, exit code, train/validation log, best/last checkpoint, and compact result. The chosen configuration is recorded before formal training starts. Data, annotations, checkpoints, and full runtime logs remain on experiment storage; only code and compact public-safe metrics and reports are published.
+
+This is a one-seed, short-budget hyperparameter search. A 20-epoch winner may not remain the strongest configuration after 80 epochs, and the prior aligned run showed that stronger validation performance does not guarantee the target test Dice. No test-based re-selection or target achievement is assumed.
