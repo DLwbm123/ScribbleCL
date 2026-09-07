@@ -28,6 +28,48 @@ def gpu_free_memory():
     return dict(tuple(map(int, line.split(","))) for line in output.strip().splitlines())
 
 
+def run_gpu_queue(tasks, run_task, min_free_memory_mib=12288):
+    pending = Queue()
+    for task in tasks:
+        pending.put(task)
+
+    allocation_lock = Lock()
+    reserved_until = {gpu: 0.0 for gpu in (4, 5, 6, 7)}
+
+    def worker():
+        rows = []
+        while not pending.empty():
+            with allocation_lock:
+                free = gpu_free_memory()
+                available = [gpu for gpu in (4, 5, 6, 7)
+                             if free.get(gpu, 0) >= min_free_memory_mib
+                             and time.monotonic() >= reserved_until[gpu]]
+                gpu = max(available, key=lambda gpu: free[gpu]) if available else None
+                if gpu is not None:
+                    try:
+                        task = pending.get_nowait()
+                    except Empty:
+                        break
+                    # Allow CUDA startup allocations to become visible before sharing again.
+                    reservation = time.monotonic() + 60
+                    reserved_until[gpu] = reservation
+            if gpu is None:
+                time.sleep(10)
+                continue
+            try:
+                rows.append(run_task(task, gpu))
+            finally:
+                pending.task_done()
+                with allocation_lock:
+                    if reserved_until[gpu] == reservation:
+                        reserved_until[gpu] = 0.0
+        return rows
+
+    with ThreadPoolExecutor(max_workers=min(len(tasks), 8)) as pool:
+        futures = [pool.submit(worker) for _ in tasks]
+        return [row for future in futures for row in future.result()]
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-root", type=Path, required=True)
@@ -65,53 +107,19 @@ def main():
         "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
     }
     write_json(args.output / "pipeline.json", protocol)
-    pending = Queue()
-    for task in tasks:
-        pending.put(task)
+    def run_task(task, gpu):
+        domain = "ABCDEF"[task - 1]
+        print(f"Starting Domain {domain} on GPU {gpu}", flush=True)
+        try:
+            row = run_training(args, domain, 0.01, 80, gpu, True, task=task,
+                               warmup=args.warmup_epochs - 1, demo_test_selection=args.demo_test_selection)
+            return {"domain": domain, "status": "complete", **row}
+        except Exception as error:
+            row = {"domain": domain, "gpu": gpu, "status": "failed", "error": repr(error)}
+            write_json(args.output / f"{domain}.failure.json", row)
+            return row
 
-    allocation_lock = Lock()
-    reserved_until = {gpu: 0.0 for gpu in (4, 5, 6, 7)}
-
-    def worker():
-        rows = []
-        while not pending.empty():
-            with allocation_lock:
-                free = gpu_free_memory()
-                available = [gpu for gpu in (4, 5, 6, 7)
-                             if free.get(gpu, 0) >= args.min_free_memory_mib
-                             and time.monotonic() >= reserved_until[gpu]]
-                gpu = max(available, key=lambda gpu: free[gpu]) if available else None
-                if gpu is not None:
-                    try:
-                        task = pending.get_nowait()
-                    except Empty:
-                        break
-                    # Allow CUDA startup allocations to become visible before sharing again.
-                    reservation = time.monotonic() + 60
-                    reserved_until[gpu] = reservation
-            if gpu is None:
-                time.sleep(10)
-                continue
-            domain = "ABCDEF"[task - 1]
-            print(f"Starting Domain {domain} on GPU {gpu}", flush=True)
-            try:
-                row = run_training(args, domain, 0.01, 80, gpu, True, task=task,
-                                   warmup=args.warmup_epochs - 1, demo_test_selection=args.demo_test_selection)
-                rows.append({"domain": domain, "status": "complete", **row})
-            except Exception as error:
-                row = {"domain": domain, "gpu": gpu, "status": "failed", "error": repr(error)}
-                write_json(args.output / f"{domain}.failure.json", row)
-                rows.append(row)
-            finally:
-                pending.task_done()
-                with allocation_lock:
-                    if reserved_until[gpu] == reservation:
-                        reserved_until[gpu] = 0.0
-        return rows
-
-    with ThreadPoolExecutor(max_workers=len(tasks)) as pool:
-        futures = [pool.submit(worker) for _ in tasks]
-        rows = sorted([row for future in futures for row in future.result()], key=lambda row: row["domain"])
+    rows = sorted(run_gpu_queue(tasks, run_task, args.min_free_memory_mib), key=lambda row: row["domain"])
     protocol["results"] = rows
     protocol["status"] = "complete" if len(rows) == len(tasks) and all(r["status"] == "complete" for r in rows) else "failed"
     write_json(args.output / "pipeline.json", protocol)

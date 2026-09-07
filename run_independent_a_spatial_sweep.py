@@ -42,7 +42,7 @@ def adopted_exit_status(pid, parent, output):
         time.sleep(2)
 
 
-def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP, demo_test_selection=False):
+def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP, demo_test_selection=False, lr=0.03, global_weight=1.0, validate_every=200):
     output = args.output / name
     command = [
         sys.executable, "-u", "main.py", "--setting-run",
@@ -50,8 +50,8 @@ def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP, d
         "--output", str(output), "--device", "cuda:0", "--seed", "42",
         "--independent-reference", "--independent-task", str(task),
         "--method", "zs-sequential", "--epochs-per-task", str(epochs),
-        "--batch-size", "4", "--lr", "0.03", "--workers", "8", "--validate-every", "200",
-        "--pce-loss-weight", "1", "--zs-global-weight", "1",
+        "--batch-size", "4", "--lr", str(lr), "--workers", "8", "--validate-every", str(validate_every),
+        "--pce-loss-weight", "1", "--zs-global-weight", str(global_weight),
         "--zs-spatial-loss-weight", str(weight), "--zs-spatial-warmup-epochs", str(warmup),
     ]
     if demo_test_selection:
@@ -91,6 +91,8 @@ def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP, d
     if demo_test_selection:
         assert summary["test_for_selection"] and summary["result_usage"] == "platform_demo"
         assert summary["selection_split"] == "test" and not summary["held_out_test_evaluated"]
+    assert manifest["learning_rate"] == lr and manifest["zs_global_weight"] == global_weight
+    assert manifest["validate_every"] == validate_every
     assert manifest["zs_spatial_loss_weight"] == weight
     assert manifest["zs_spatial_warmup_epochs"] == warmup
     train_rows = [json.loads(line) for line in (output / "train.jsonl").read_text().splitlines()]
@@ -104,6 +106,7 @@ def run_training(args, name, weight, epochs, gpu, test, task=1, warmup=WARMUP, d
     best_selection = record["best_selection"] if demo_test_selection else record["best_validation"]
     row = {
         "run": name, "gpu": gpu, "spatial_weight": weight, "epochs": epochs,
+        "learning_rate": lr, "global_weight": global_weight, "validate_every": validate_every,
         "validation_foreground": best_selection["foreground_mean"],
         "validation_inclusive": best_selection["inclusive_mean"],
         "best_epoch": best_selection["epoch"],
