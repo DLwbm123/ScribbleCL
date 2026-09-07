@@ -42,13 +42,13 @@ def adopted_exit_status(pid, parent, output):
         time.sleep(2)
 
 
-def run_training(args, name, weight, epochs, gpu, test):
+def run_training(args, name, weight, epochs, gpu, test, task=1):
     output = args.output / name
     command = [
         sys.executable, "-u", "main.py", "--setting-run",
         "--data-root", str(args.data_root), "--sparse-root", str(args.sparse_root),
         "--output", str(output), "--device", "cuda:0", "--seed", "42",
-        "--independent-reference", "--independent-task", "1",
+        "--independent-reference", "--independent-task", str(task),
         "--method", "zs-sequential", "--epochs-per-task", str(epochs),
         "--batch-size", "4", "--lr", "0.03", "--workers", "8", "--validate-every", "200",
         "--pce-loss-weight", "1", "--zs-global-weight", "1",
@@ -78,8 +78,10 @@ def run_training(args, name, weight, epochs, gpu, test):
     manifest = json.loads((output / "manifest.json").read_text())
     record = summary["records"][0]
     assert manifest["status"] == "complete" and summary["complete"]
-    assert summary["completed_epochs"] == epochs and summary["iteration"] == 76 * epochs
-    assert summary["train_samples"] == 301 and summary["task_order"] == ["A"]
+    assert summary["completed_epochs"] == epochs and summary["iteration"] == summary["batches_per_epoch"] * epochs
+    assert summary["train_samples"] > 0 and summary["task_order"] == ["ABCDEF"[task - 1]]
+    if task == 1:
+        assert summary["train_samples"] == 301 and summary["batches_per_epoch"] == 76
     assert summary["score_split"] == ("test" if test else "val")
     assert summary["test_evaluated"] == test and (record["test"] is not None) == test
     assert manifest["zs_spatial_loss_weight"] == weight
@@ -104,8 +106,9 @@ def run_training(args, name, weight, epochs, gpu, test):
     }
     if test:
         row["test"] = record["test"]
-        row["target_difference"] = record["test"]["foreground_mean"] - 0.7261413306722405
-        row["target_reached"] = row["target_difference"] >= 0
+        if task == 1:
+            row["target_difference"] = record["test"]["foreground_mean"] - 0.7261413306722405
+            row["target_reached"] = row["target_difference"] >= 0
     write_json(args.output / (name + ".result.json"), row)
     print(json.dumps(row), flush=True)
     return row
