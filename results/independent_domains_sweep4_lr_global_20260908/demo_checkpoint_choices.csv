@@ -1,0 +1,7 @@
+domain,run,phase,candidate,epochs,learning_rate,global_weight,spatial_weight,foreground_demo_selection_dice,inclusive_demo_selection_dice,best_epoch_one_based,best_iteration,exitcode,best_checkpoint_relative_path
+A,A_s2,sweep,2,20,0.03,0.1,0.01,0.7591552963267544,0.8777268723767963,17,1292,0,A_s2/best.pt
+B,B_formal80,formal,0,80,0.03,1.0,0.01,0.5523577062776047,0.7704937125245936,42,1764,0,B_formal80/best.pt
+C,C_formal80,formal,1,80,0.01,1.0,0.01,0.6461911575995178,0.8189376727229833,71,6177,0,C_formal80/best.pt
+D,D_formal80,formal,0,80,0.03,1.0,0.01,0.5370209892079258,0.7655336836576423,60,2520,0,D_formal80/best.pt
+E,E_formal80,formal,1,80,0.01,1.0,0.01,0.7053657033598169,0.8488190925529553,74,10804,0,E_formal80/best.pt
+F,F_formal80,formal,1,80,0.01,1.0,0.01,0.6787189996941617,0.8376157723180915,51,8976,0,F_formal80/best.pt

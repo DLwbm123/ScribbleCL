@@ -1,8 +1,43 @@
 # Four-candidate per-domain LR/global sweep, then selected formal training
 
-Status: **launched at 2026-09-07 22:00:32 Asia/Shanghai**. The user requested an independent sweep for every domain with at most four sweep experiments per domain, followed by formal training using each domain's selected parameters. This batch contains exactly **24 new 20-epoch sweep runs plus 6 fresh 80-epoch formal runs**. Earlier experiments are preserved.
+Status: **completed at 2026-09-08 01:30:26 Asia/Shanghai**, after launch at 2026-09-07 22:00:32 (about 3 hours 30 minutes). All **24 new 20-epoch sweep runs plus 6 fresh 80-epoch formal runs** completed, with 30 training exit codes and the coordinator exit code all 0. This meets the user's limit of four new sweep candidates per domain. Earlier experiments are preserved.
 
 The previously authorized platform-demo protocol continues: each domain's original test split is the selection split. All scores are explicitly labeled demo selection scores and are not held-out test estimates. This batch does not use a shared cross-domain winner.
+
+## Completed sweep scores
+
+| Domain | s0: LR .03 / Global 1 | s1: LR .01 / Global 1 | s2: LR .03 / Global .1 | s3: LR .01 / Global .1 |
+|---|---:|---:|---:|---:|
+| A | 0.7475 | 0.7000 | **0.7592** | 0.6174 |
+| B | **0.5516** | 0.4953 | 0.5094 | 0.4745 |
+| C | 0.5168 | **0.6034** | 0.5803 | 0.4908 |
+| D | **0.4594** | 0.4048 | 0.3917 | 0.2964 |
+| E | 0.6297 | **0.6318** | 0.6224 | 0.4707 |
+| F | 0.5510 | **0.6448** | 0.5822 | 0.6046 |
+
+Each cell is that candidate's best original-test foreground demo selection Dice during 20 epochs. B, C, and F's selected sweep checkpoints occurred before spatial activation; their selection cannot establish the effectiveness of the spatial component. E's s1 lead over s0 is only 0.0021633752 and should not be described as a robust advantage from one seed.
+
+## Fresh 80-epoch formal results
+
+| Domain | Selected LR | Selected Global | Sweep winner Dice | New formal Dice | Previous formal Dice | Change (percentage points) |
+|---|---:|---:|---:|---:|---:|---:|
+| A | 0.03 | 0.1 | 0.7592 | **0.5843** | 0.7366 | **-15.24** |
+| B | 0.03 | 1.0 | 0.5516 | 0.5524 | 0.5414 | +1.10 |
+| C | 0.01 | 1.0 | 0.6034 | 0.6462 | 0.6413 | +0.49 |
+| D | 0.03 | 1.0 | 0.4594 | 0.5370 | 0.4804 | +5.67 |
+| E | 0.01 | 1.0 | 0.6318 | 0.7054 | 0.6899 | +1.54 |
+| F | 0.01 | 1.0 | 0.6448 | 0.6787 | 0.6628 | +1.59 |
+| Unweighted mean | | | | **0.6173** | **0.6254** | **-0.81** |
+
+Five domains improved relative to the [previous demo batch](independent_domains_demo_test_selection_20260907.md), but A regressed enough that the formal six-domain mean decreased. B/D retained the same LR/global settings, while evaluation frequency changed from every 200 steps to every epoch for all domains. These comparisons therefore combine checkpoint sampling, training variability, and (where changed) hyperparameters; improvements cannot be attributed solely to the sweep.
+
+A's failure to transfer from 0.7591552963 in the 20-epoch sweep to 0.5842726165 in the fresh 80-epoch run is material. The formal run did not resume the sweep checkpoint; it used a different-length polynomial LR schedule and a new CUDA training trajectory. Completion checks confirmed the selected LR/global parameters were forwarded correctly. This result demonstrates the limitation of short-budget selection; it does not establish a specific causal explanation for the drop. No additional training or candidate testing was launched during this closeout.
+
+## Platform checkpoint choices from this batch
+
+For the already-authorized demonstration use, the strongest available checkpoint in this batch is **A_s2/best.pt** for A (20-epoch sweep, score **0.7591552963**, selected at epoch 17). For B-F, the strongest available checkpoints are their new `<domain>_formal80/best.pt` files, selected at epochs 42, 71, 60, 74, and 51 respectively. This mixed sweep/formal collection has an unweighted mean demo selection Dice of **0.6464683087**. It must not be called the six-domain 80-epoch formal result. No platform deployment or checkpoint replacement was performed.
+
+Public artifacts: [all 30 runs](../results/independent_domains_sweep4_lr_global_20260908/all_runs.csv), [formal comparison](../results/independent_domains_sweep4_lr_global_20260908/formal_comparison.csv), [checkpoint choices with phase provenance](../results/independent_domains_sweep4_lr_global_20260908/demo_checkpoint_choices.csv), [completed protocol](../results/independent_domains_sweep4_lr_global_20260908/pipeline_complete.json), [exact commands](../results/independent_domains_sweep4_lr_global_20260908/commands.json), [manifests](../results/independent_domains_sweep4_lr_global_20260908/manifests.json), and [selection curves](../results/independent_domains_sweep4_lr_global_20260908/selection_curves.csv).
 
 ## Candidate grid
 
@@ -44,4 +79,4 @@ The NAS mount and free capacity were checked, followed by a small create/write/r
 
 The existing queue self-check passed after reuse. The new coordinator's self-check verifies exactly four candidates for every domain, separate winners per domain, all 24 candidates finishing before any formal run, forwarding each selected pair into its own formal run, and blocking formal launch after a failed candidate. It uses simulated training, so it adds no sweep experiments. Code syntax and whitespace checks passed.
 
-This report documents an active batch. Completed metrics will be checked and published when completion is subsequently queried. Data, annotations, model checkpoints, credentials, and full runtime logs are not included in the public repository.
+At closeout, all 30 summaries/manifests were checked against their expected epoch/step counts, zero exit codes, demo-selection labels, result metrics, and selected parameters. All 60 best/last checkpoint files were present and nonempty. Metrics were exported without re-evaluation or file hashing. Source, configurations, aggregate metrics, curves, and this report are published; data, annotations, model checkpoints, credentials, and full runtime logs remain excluded from the public repository. Model files stay under the NAS output root above.
