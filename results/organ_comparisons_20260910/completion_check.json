@@ -1,0 +1,87 @@
+{
+  "zs-gpm": {
+    "epochs": [
+      60,
+      60,
+      10,
+      10
+    ],
+    "exitcode": 0,
+    "finite_losses": true,
+    "selected_stage_checkpoints": 4,
+    "selected_epochs": [
+      43,
+      39,
+      6,
+      7
+    ]
+  },
+  "zs-ewc": {
+    "epochs": [
+      60,
+      60,
+      10,
+      10
+    ],
+    "exitcode": 0,
+    "finite_losses": true,
+    "selected_stage_checkpoints": 4,
+    "selected_epochs": [
+      43,
+      46,
+      10,
+      2
+    ]
+  },
+  "zs-sequential": {
+    "epochs": [
+      60,
+      60,
+      10,
+      10
+    ],
+    "exitcode": 0,
+    "finite_losses": true,
+    "selected_stage_checkpoints": 4,
+    "selected_epochs": [
+      43,
+      48,
+      9,
+      6
+    ]
+  },
+  "dense-sequential": {
+    "epochs": [
+      60,
+      60,
+      10,
+      10
+    ],
+    "exitcode": 0,
+    "finite_losses": true,
+    "selected_stage_checkpoints": 4,
+    "selected_epochs": [
+      38,
+      9,
+      8,
+      8
+    ]
+  },
+  "pce-sequential": {
+    "epochs": [
+      60,
+      60,
+      10,
+      10
+    ],
+    "exitcode": 0,
+    "finite_losses": true,
+    "selected_stage_checkpoints": 4,
+    "selected_epochs": [
+      32,
+      22,
+      8,
+      2
+    ]
+  }
+}
