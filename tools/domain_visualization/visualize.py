@@ -85,6 +85,8 @@ def render(directory):
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     from matplotlib.lines import Line2D
+    from matplotlib.colors import to_rgb
+    from matplotlib.patches import Patch
     out = Path(directory)
     data = np.load(out / 'selected_slices.npz')
     report = json.loads((out / 'selection.json').read_text())
@@ -93,22 +95,29 @@ def render(directory):
     names = ['Image', 'Ground truth'] + [m['name'].replace('-Sequential', '\nSequential') for m in methods]
     names[-1] = 'ScribbleCL (ours)\nZS-DER++'
 
+    def overlay(ax, mask):
+        mask = mask.astype(bool)
+        rgba = np.zeros((*mask.shape, 4))
+        rgba[mask] = (*to_rgb('#ff657a'), .42)
+        if mask.any() and not mask.all():
+            ax.contour(mask, levels=[.5], colors=['#ff657a'], linewidths=1)
+        ax.imshow(rgba, interpolation='nearest')
+
     def panel(rows, zoom, filename):
-        fig, axes = plt.subplots(len(rows), 7, figsize=(17.5, 2.5 * len(rows)), squeeze=False)
+        fig, axes = plt.subplots(len(rows), 7, figsize=(17.5, 2.8 * len(rows) + .5), squeeze=False)
         for r, row in enumerate(rows):
             code = row['domain']; im = data[code + '_image']; gt = data[code + '_gt']
             lo, hi = np.percentile(im, [1, 99])
             for c, ax in enumerate(axes[r]):
                 ax.imshow(im, cmap='gray', vmin=lo, vmax=hi, interpolation='nearest')
-                if c >= 1:
-                    ax.contour(gt, levels=[.5], colors=['#35e77d'], linewidths=1.15)
-                if c >= 2:
+                if c == 1:
+                    overlay(ax, gt)
+                elif c >= 2:
                     pred = data[code + '_pred_' + str(c-2)]
-                    if pred.any() and not pred.all():
-                        ax.contour(pred, levels=[.5], colors=['#ff5d78'], linewidths=1.15)
+                    overlay(ax, pred)
+                    ax.contour(gt, levels=[.5], colors=['white'], linewidths=.8, linestyles='dashed')
                     score = row['scores'][methods[c-2]['name']]
-                    ax.text(.5, .025, f'Dice {score:.3f}', transform=ax.transAxes, ha='center', va='bottom', color='white', fontsize=10,
-                            bbox=dict(facecolor='black', edgecolor='none', alpha=.75, pad=2))
+                    ax.set_xlabel(f'Dice {score:.3f}', fontsize=11, weight='bold', labelpad=6)
                 if zoom:
                     y, x = np.where(gt)
                     size = max(int(max(x.max()-x.min(), y.max()-y.min()) * 1.7), 72)
@@ -119,12 +128,12 @@ def render(directory):
                 for spine in ax.spines.values(): spine.set_visible(False)
                 if r == 0: ax.set_title(names[c], fontsize=11, weight='bold', pad=10)
             axes[r,0].set_ylabel(f'Domain {code}\nCase {row["patient_index"]+1}, slice {row["slice_in_patient"]}\nTest index {row["slice_index"]}', fontsize=10)
-        fig.legend([Line2D([0],[0],color='#35e77d',lw=2),Line2D([0],[0],color='#ff5d78',lw=2)],
-                   ['Ground truth', 'Prediction'], loc='lower center', ncol=2, frameon=False, bbox_to_anchor=(.5,.015))
+        fig.legend([Patch(color='#ff657a', alpha=.42), Line2D([0],[0],color='#555555',ls='--')],
+                   ['Foreground', 'White dashed: ground truth'], loc='lower center', ncol=2, frameon=False, bbox_to_anchor=(.5,.025))
         if len(rows) > 1:
             fig.suptitle('Domain-CL | Best foreground-Dice slice per domain', fontsize=16, weight='bold', y=.995)
         fig.text(.5,.009,'Post-hoc best-case examples on test data • All models after A–F training • Same slice and display scale across methods',ha='center',fontsize=9,color='#555555')
-        fig.subplots_adjust(left=.067,right=.995,top=.92 if len(rows)>1 else .78,bottom=.07 if len(rows)>1 else .2,wspace=.035,hspace=.08)
+        fig.subplots_adjust(left=.067,right=.995,top=.92 if len(rows)>1 else .78,bottom=.08 if len(rows)>1 else .24,wspace=.035,hspace=.22)
         fig.savefig(out / (filename+'.png'), dpi=190, facecolor='white')
         fig.savefig(out / (filename+'.pdf'), facecolor='white')
         plt.close(fig)

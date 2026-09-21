@@ -15,3 +15,5 @@ Select the maximum ZS-DER++ foreground slice Dice independently per domain, excl
 The exporter verifies the six whole-test, patient-mean foreground scores against the preserved formal report before saving. The September 21 run reproduced all six within 1e-5, scanning 1,030 slices. The figure covers PCE-Sequential, ZS-Sequential, ZS-EWC, ZS-GPM, and ZS-DER++. Dense-Sequential and incomplete ER/DER runs are not included.
 
 Keep all generated medical images, masks, per-slice tables, selection metadata, and NPZ exports private. This directory publishes only reusable source, a redacted configuration, and this method note.
+
+Display matches Class-CL: red foreground fill at alpha 0.42 with a matching outline, white dashed ground-truth contours on prediction panels, and Dice below each panel. Rendering reuses cached masks and scores without changing selection, contrast windows, or crops.
