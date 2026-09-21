@@ -1,0 +1,35 @@
+{
+  "code": "<existing-domain-runtime>",
+  "data": "<domain-h5-root>",
+  "output": "<private-output-directory>",
+  "methods": [
+    {
+      "name": "PCE-Sequential",
+      "checkpoint": "<checkpoint-root>/x7p2a/s06.pt"
+    },
+    {
+      "name": "ZS-Sequential",
+      "checkpoint": "<checkpoint-root>/x7p2c/s06.pt"
+    },
+    {
+      "name": "ZS-EWC",
+      "checkpoint": "<checkpoint-root>/x7p2d/s06.pt"
+    },
+    {
+      "name": "ZS-GPM",
+      "checkpoint": "<checkpoint-root>/m7v2q/s06.pt"
+    },
+    {
+      "name": "ZS-DER++",
+      "checkpoint": "<checkpoint-root>/t4m7b/s06.pt"
+    }
+  ],
+  "expected_ours_foreground": {
+    "A": 0.6607539745936357,
+    "B": 0.748716425277317,
+    "C": 0.6055146370732349,
+    "D": 0.23678599807521075,
+    "E": 0.37495891429943096,
+    "F": 0.6357550948291332
+  }
+}
