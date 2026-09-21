@@ -1,0 +1,36 @@
+{
+  "code": "<existing-class-runtime>",
+  "data": "<class-h5-root>",
+  "output": "<private-output-directory>",
+  "methods": [
+    {
+      "name": "Dense-Sequential",
+      "checkpoint": "<checkpoint-root>/dense_sequential/s03.pt"
+    },
+    {
+      "name": "PCE-Sequential",
+      "checkpoint": "<checkpoint-root>/pce_sequential/s03.pt"
+    },
+    {
+      "name": "ZS-Sequential",
+      "checkpoint": "<checkpoint-root>/zs_sequential/s03.pt"
+    },
+    {
+      "name": "ZS-EWC",
+      "checkpoint": "<checkpoint-root>/zs_ewc/s03.pt"
+    },
+    {
+      "name": "ZS-GPM",
+      "checkpoint": "<checkpoint-root>/zs_gpm/s03.pt"
+    },
+    {
+      "name": "ZS-DER++ + MiB",
+      "checkpoint": "<checkpoint-root>/main_s0/s03.pt"
+    }
+  ],
+  "expected_ours_foreground": {
+    "T1": 0.7301113062678797,
+    "T2": 0.7188412907992933,
+    "T3": 0.5891480636279834
+  }
+}
