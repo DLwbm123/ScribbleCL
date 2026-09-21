@@ -1,4 +1,4 @@
-"""Requested contrastive selection: acquisition baselines versus final Ours."""
+"""Qualitative selection: acquisition baselines versus final Ours."""
 import csv
 import json
 import sys
@@ -24,7 +24,7 @@ def mask_disagreement(predictions, target, limit):
     return pairs
 
 
-def select_row(rows):
+def select_row(rows, mode="diverse"):
     feasible=[r for r in rows if min(r['baseline_foreground_pixels'])>=32 and min(r['baseline_scores'])>=.01]
     if not feasible:
         raise ValueError('No slice satisfies visible foreground and nonzero overlap for all baselines')
@@ -32,6 +32,9 @@ def select_row(rows):
         feasible=[r for r in feasible if r['ours_dice']-max(r['baseline_scores'])>=.10]
         if not feasible:
             raise ValueError('No diverse-mode candidate retains an Ours advantage of 0.10')
+        if mode=='stronger_zs':
+            return max(feasible,key=lambda r:(min(r['baseline_scores'][2:5]),
+                       min(r['baseline_pair_disagreement']),r['ours_dice'],-r['slice_index']))
         return max(feasible,key=lambda r:(min(r['baseline_pair_disagreement']),
                     float(np.mean(r['baseline_pair_disagreement'])),
                     r['ours_dice']-max(r['baseline_scores']),r['ours_dice'],-r['slice_index']))
@@ -81,7 +84,7 @@ def main(config_path):
             continue
         original=[r for r in candidates if r['task']==task]
         best_ours=max(float(r['ours_dice']) for r in original)
-        qualified=[r for r in original if float(r['ours_dice'])>=.90*best_ours]
+        qualified=[r for r in original if float(r['ours_dice'])>=config.get('ours_fraction',.90)*best_ours]
         ids=[int(r['slice_index']) for r in qualified]
         predictions=[]
         for method in methods[:-1]:
@@ -104,7 +107,7 @@ def main(config_path):
                 'baseline_min_disagreement':min(pair_disagreement),
                 'baseline_mean_disagreement':float(np.mean(pair_disagreement)),
                 **{m['name']:v for m,v in zip(methods[:-1],scores)}})
-        chosen=select_row(rows);i=chosen['candidate_position'];idx=chosen['slice_index']
+        chosen=select_row(rows,config.get('selection_mode','diverse'));i=chosen['candidate_position'];idx=chosen['slice_index']
         # Match the original full-test batch to avoid floating-point argmax ties.
         batch_start=(idx//4)*4
         own=predict(methods[-1],3,list(range(batch_start,min(batch_start+4,len(images)))))[idx-batch_start]
@@ -113,7 +116,7 @@ def main(config_path):
         patient=int(np.searchsorted(ends,idx));start=0 if patient==0 else int(ends[patient-1])+1
         row={'task':task,'classes':labels,'slice_index':idx,'patient_index':patient,'slice_in_patient':idx-start,
              'ours_dice':chosen['ours_dice'],'scores':{},'per_class':{},'checkpoint_stages':{},'checkpoints':{},
-             'eligible_ours_high_score_candidates':len(ids),'ours_score_floor':.90*best_ours,
+             'eligible_ours_high_score_candidates':len(ids),'ours_score_floor':config.get('ours_fraction',.90)*best_ours,
              'margin_over_strongest_baseline':chosen['ours_dice']-max(chosen['baseline_scores']),
              'baseline_foreground_pixels':chosen['baseline_foreground_pixels']}
         row['baseline_pair_disagreement']=chosen['baseline_pair_disagreement']
@@ -135,7 +138,7 @@ def main(config_path):
         w=csv.DictWriter(f,fieldnames=list(ranked_rows[0]));w.writeheader();w.writerows(ranked_rows)
     (out/'selection.json').write_text(json.dumps({'config':config,'selection':selected,
         'comparison_protocol':'baselines_at_task_end_ours_final',
-        'selection_rule':'T1 preserved. For T2/T3 keep Ours >=90% of its best eligible slice Dice; require each baseline >=32 foreground pixels and Dice >=0.01, and Ours margin >=0.10 over every baseline. Maximize minimum pairwise class-aware foreground disagreement among five baselines inside the displayed crop; ties use mean disagreement then Ours margin. Deliberately selected qualitative examples.',
+        'selection_rule':config.get('selection_description','High-Ours candidates, visible baseline foreground, Ours margin >=0.10, then maximize minimum pairwise foreground disagreement.'),
         'pair_order':[[a['name'],b['name']] for i,a in enumerate(methods[:-1]) for b in methods[i+1:-1]],
         'ground_truth_source':'MMWHS/whole_heart_test.h5','test_slices':len(images),
         'index_convention':'zero-based; displayed cases are one-based'},indent=2))
@@ -155,5 +158,8 @@ if __name__=='__main__':
         for row in rows[:2]:row.update(task='T2',baseline_pair_disagreement=[.1 if row['slice_index']==2 else .4])
         rows[0]['baseline_scores']=[.7,.6]
         assert select_row(rows[:2])['slice_index']==1
+        stronger=[dict(rows[0],baseline_scores=[.4,.3,.2,.2,.2]),
+                  dict(rows[1],baseline_scores=[.4,.3,.3,.3,.3])]
+        assert select_row(stronger,'stronger_zs')['slice_index']==2
         print('self-check passed')
     else:main(sys.argv[1])
