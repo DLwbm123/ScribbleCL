@@ -1,0 +1,109 @@
+{
+  "code": "/path/to/frozen/runtime",
+  "data": "/path/to/data",
+  "output": "/path/to/private/output",
+  "methods": [
+    {
+      "name": "Dense-Sequential",
+      "checkpoint": "/path/to/checkpoints/Dense-Sequential/s04.pt",
+      "expected": {
+        "T1": 0.8682734002507239,
+        "T2": 0.8209561610504882,
+        "T3": 0.9014590099510222,
+        "T4": 0.8500371827030105
+      }
+    },
+    {
+      "name": "PCE-Sequential",
+      "checkpoint": "/path/to/checkpoints/PCE-Sequential/s04.pt",
+      "expected": {
+        "T1": 0.4264860125472388,
+        "T2": 0.3125327223829625,
+        "T3": 0.7880541001654768,
+        "T4": 0.7758592969231111
+      }
+    },
+    {
+      "name": "ZS-Sequential",
+      "checkpoint": "/path/to/checkpoints/ZS-Sequential/s04.pt",
+      "expected": {
+        "T1": 0.5909786302535597,
+        "T2": 0.4975152444695562,
+        "T3": 0.8195056412984387,
+        "T4": 0.8173811235241583
+      }
+    },
+    {
+      "name": "ZS-EWC",
+      "checkpoint": "/path/to/checkpoints/ZS-EWC/s04.pt",
+      "expected": {
+        "T1": 0.5909786302535597,
+        "T2": 0.5051499230106676,
+        "T3": 0.8135182456223268,
+        "T4": 0.8056727093399656
+      }
+    },
+    {
+      "name": "ZS-GPM",
+      "checkpoint": "/path/to/checkpoints/ZS-GPM/s04.pt",
+      "expected": {
+        "T1": 0.5909786302535597,
+        "T2": 0.5312245309171707,
+        "T3": 0.814364009379087,
+        "T4": 0.7558446812134286
+      }
+    },
+    {
+      "name": "ZS-DER++",
+      "checkpoint": "/path/to/checkpoints/ZS-DER++/s04.pt",
+      "expected": {
+        "T1": 0.6342617788087944,
+        "T2": 0.5728554590666434,
+        "T3": 0.7921885215378445,
+        "T4": 0.8195190509003548
+      }
+    }
+  ],
+  "tasks": [
+    {
+      "code": "T1",
+      "file": "Task_incre/UtahI.h5",
+      "classes": [
+        1
+      ],
+      "label_shift": 0,
+      "head": 0,
+      "organ": "Left atrium"
+    },
+    {
+      "code": "T2",
+      "file": "Task_incre/UCL.h5",
+      "classes": [
+        1
+      ],
+      "label_shift": 0,
+      "head": 1,
+      "organ": "Prostate"
+    },
+    {
+      "code": "T3",
+      "file": "Task_incre/Lits.h5",
+      "classes": [
+        1
+      ],
+      "label_shift": 0,
+      "head": 2,
+      "organ": "Liver"
+    },
+    {
+      "code": "T4",
+      "file": "Task_incre/brain.h5",
+      "classes": [
+        1
+      ],
+      "label_shift": 0,
+      "head": 3,
+      "organ": "Brain tumor"
+    }
+  ]
+}
