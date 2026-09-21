@@ -1,8 +1,10 @@
-# Class-CL best-slice visualization
+# Class-CL cumulative visualization from final models
 
-Post-hoc visualization of six existing, completed 80-epoch-per-task models from the September 10 comparison campaign. Uses the campaign's frozen Class runtime, its H5Slices label mapping and its inference function. The methods are Dense-Sequential, PCE-Sequential, ZS-Sequential, ZS-EWC, ZS-GPM, and ZS-DER++ + MiB (main_s0). All use s03.pt after T3; historical v6c43 is not substituted. No new training or model selection.
+Corrected definition: every row uses the same final T3 checkpoint (`s03.pt`) for each method. The rows are cumulative views of classes C1–C3, C1–C5, and C1–C7. They are not snapshots of intermediate model stages, nor separate 3/2/2 new-class evaluations.
 
-Edit the private paths in config.example.json and save as config.json, then use the existing runtime environment (PyTorch, NumPy, Matplotlib):
+The six completed, matched-budget models are Dense-Sequential, PCE-Sequential, ZS-Sequential, ZS-EWC, ZS-GPM, and ZS-DER++ + MiB (`main_s0`) from the September 10 campaign: seed 42, 80 epochs/task. No training, tuning, or checkpoint reselection.
+
+Use the campaign's frozen runtime and its PyTorch/NumPy/Matplotlib environment. Edit config.example.json with private paths and save as config.json:
 
 ```sh
 python visualize.py self-check
@@ -10,16 +12,16 @@ python visualize.py infer config.json
 python visualize.py render /path/to/private/output
 ```
 
-The main method must be last. Inference performs eight-channel argmax (background plus all seven learned classes), with no task-specific output masking or postprocessing. T1 is MYO/LV/LA, T2 is RA/RV, T3 is AO/PA. Select the greatest macro foreground slice Dice for each task among test slices containing all its foreground classes; absent classes cannot inflate selection. Ties favor greater target area, then the smaller slice index. Baselines use exactly the same slices. These post-hoc best cases do not represent mean test performance.
+Ground truth comes from the existing fully annotated `MMWHS/whole_heart_test.h5` (1,350 slices, nine patients). This differs from the 900-slice new-class task subsets used by the former exporter. Therefore cumulative scores must not be compared as if from the same subset metrics.
 
-Every figure uses the same anatomy colors, slice, contrast, and crop across methods. Predictions show all seven class labels, including later classes on earlier-task images; the available ground truth contains the task's classes only. Dashed white contours denote task GT. Dice uses the full slice and task classes, excluding background. Zoom changes only the display; full-field figures retain predictions outside the crop.
+Inference always takes argmax over all eight channels (background plus seven classes). Only after argmax are labels above the row's cumulative limit mapped to background for display, with the same filtering applied to ground truth. Excluded winners are not reassigned by a restricted-logit argmax. Foreground Dice for included classes is unchanged by this display filtering. Raw complete GT and predictions are retained in the private NPZ.
 
-The exporter checks the main method's full-test patient/class mean for each task against its persisted summary with tolerance 1e-5. Its small runnable self-check covers label identity, absent-class exclusion, and unmasked later-class mistakes.
+Select the highest Ours macro foreground Dice separately for each cumulative view, requiring every included class to be present in the slice. Break ties by larger cumulative foreground area, then lower index. All methods use exactly the selected slice, contrast and crop. This is post-hoc best-case selection, not an estimate of average performance. Ours must be last in the configuration.
 
-Generated images, masks, per-slice scores, NPZ data, and private paths stay local or on the authorized server. This directory contains source and a redacted configuration only.
+The exporter verifies all seven complete-test per-class patient-mean Dice scores against the existing `whole_class_dice` summary within 1e-5; it also checks patient-boundary coverage, cumulative label ranges, and equality of raw-versus-displayed foreground scores. The self-check specifically covers 3/5/7 filtering and prevents relabeling of excluded predictions.
 
-Figure legends use verified H5 global IDs C1–C7. The historical protocol names task-level anatomy groups, but the original anatomy-to-H5 conversion table was not found during this export; no unverified per-channel anatomy names are assigned.
+Colored masks use verified H5 IDs C1–C7. White dashed contours indicate cumulative GT. Dice appears below each prediction. The display window uses GT-foreground intensity percentiles 1–99, padded by 25% of that range on each side, identically across methods. Full-field and zoomed figures preserve identical masks and scores.
 
-Display window: 1st–99th percentiles of intensities inside the selected task ground truth, expanded by 25% of that range on both sides, shared by all methods. This changes grayscale display only; masks and scores are unchanged.
+The earlier 3/2/2 subset visualization is superseded for this requested cumulative view. Generated medical images, masks, per-slice tables, private paths and NPZ data remain private; this directory publishes source and a redacted configuration only.
 
-Validation (2026-09-21): the self-check passed; all 2,700 test slices were evaluated for the main method, reproducing its three stored patient/class means within 1e-5. The overview and single-task layouts were rendered and visually checked.
+Validation: self-check passed; final-model inference on all 1,350 whole-heart slices reproduced all seven stored per-class means within 1e-5. Each selected row passed GT class-presence, displayed prediction-range, and raw/display score-equivalence assertions.
