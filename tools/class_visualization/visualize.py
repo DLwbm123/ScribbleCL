@@ -150,7 +150,11 @@ def render(directory):
                     for label in row['classes']:
                         ax.contour(gt==label,levels=[.5],colors=['white'],linewidths=.8,linestyles='dashed')
                     value=row['scores'][methods[c-2]['name']]
-                    ax.set_xlabel(f'Dice {value:.3f}',fontsize=12,weight='bold',labelpad=6)
+                    label=f'Dice {value:.3f}'
+                    if 'checkpoint_stages' in row:
+                        stage=row['checkpoint_stages'][methods[c-2]['name']]
+                        label+=f'\nFinal T3' if c==columns-1 else f'\nAfter T{stage}'
+                    ax.set_xlabel(label,fontsize=11,weight='bold',labelpad=6)
                 if zoom:
                     yy,xx=np.where(gt>0);size=max(max(xx.max()-xx.min(),yy.max()-yy.min())*1.55,86)
                     cx=(xx.max()+xx.min())/2;cy=(yy.max()+yy.min())/2
@@ -163,8 +167,11 @@ def render(directory):
         legend=[Patch(color=color,label=NAMES[c]) for c,color in COLORS.items()]
         legend.append(Line2D([0],[0],color='#555555',ls='--',label='White dashed: task GT'))
         fig.legend(handles=legend,loc='lower center',ncol=8,frameon=False,bbox_to_anchor=(.5,.035),fontsize=11)
-        fig.text(.5,.014,'Same final T3 model in every row | Cumulative 3 / 5 / 7 classes | Full argmax, then display filtering | Post-hoc best cases',ha='center',fontsize=10,color='#444444')
-        fig.subplots_adjust(left=.055,right=.997,top=.91 if len(rows)>1 else .77,bottom=.135 if len(rows)>1 else .28,wspace=.045,hspace=.22)
+        caption='Same final T3 model in every row | Cumulative 3 / 5 / 7 classes | Full argmax, then display filtering | Post-hoc best cases'
+        if report.get('comparison_protocol')=='baselines_at_task_end_ours_final':
+            caption='Baselines: after each row task | Ours: final T3 | Post-hoc slices favoring Ours; nonempty baseline foreground required'
+        fig.text(.5,.014,caption,ha='center',fontsize=10,color='#444444')
+        fig.subplots_adjust(left=.055,right=.997,top=.91 if len(rows)>1 else .77,bottom=.135 if len(rows)>1 else .30,wspace=.045,hspace=.34)
         fig.savefig(out/(name+'.png'),dpi=180,facecolor='white')
         fig.savefig(out/(name+'.pdf'),facecolor='white');plt.close(fig)
     panel(report['selection'],False,'class_best_full')

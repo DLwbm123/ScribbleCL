@@ -25,3 +25,20 @@ Colored masks use verified H5 IDs C1–C7. White dashed contours indicate cumula
 The earlier 3/2/2 subset visualization is superseded for this requested cumulative view. Generated medical images, masks, per-slice tables, private paths and NPZ data remain private; this directory publishes source and a redacted configuration only.
 
 Validation: self-check passed; final-model inference on all 1,350 whole-heart slices reproduced all seven stored per-class means within 1e-5. Each selected row passed GT class-presence, displayed prediction-range, and raw/display score-equivalence assertions.
+
+## Requested acquisition-baseline contrastive mode
+
+For this separate view, the five baselines use s01/s02/s03 after each row task; Ours uses the final s03 in every row. Stage labels are printed beneath every prediction. It is a different-stage qualitative comparison, not a same-stage benchmark ranking.
+
+First preserve a completed cumulative export from the main mode above. Create a private phase configuration with the same runtime, data and methods, set `source_output` to that completed export and `output` to a new directory. Run:
+
+```sh
+python select_slices.py self-check
+python select_slices.py phase_config.json
+```
+
+Selection deliberately favors Ours: keep its scores at least 90% of the best eligible slice for the cumulative class set; require every acquisition baseline to have at least 32 predicted foreground pixels and Dice >=0.01; maximize the margin over the strongest baseline. The cached Ours score is checked against fresh selected-slice inference. The output-channel count is checked for each loaded model stage. Selection scores and checkpoint stages are recorded privately. This mode does not change aggregate experimental results or predictions.
+
+Validation of the contrastive export: selection self-check passed; 115/94/40 high-Ours candidates were screened, and every selected baseline had >=32 foreground pixels and Dice >=0.01. Model output channels matched stages (4/6/8), and fresh final-Ours selected-slice scores matched the earlier validated scores. Overview and single-row layouts retain explicit stage labels.
+
+`audit_foreground.py config.json` optionally audits final-model class presence across the complete whole-heart test set; `self-check` tests its pixel counting. The September 21 audit found no C1–C3 predicted pixels for any of the five final baselines on all 1,350 slices. Four also had no C1–C5 predictions; PCE had some C4 predictions. This explains why changing slices alone could not make every final baseline visible in the earlier cumulative rows. Raw per-slice audit outputs remain private.
