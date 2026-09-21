@@ -30,15 +30,17 @@ Validation: self-check passed; final-model inference on all 1,350 whole-heart sl
 
 For this separate view, the five baselines use s01/s02/s03 after each row task; Ours uses the final s03 in every row. Stage labels are printed beneath every prediction. It is a different-stage qualitative comparison, not a same-stage benchmark ranking.
 
-First preserve a completed cumulative export from the main mode above. Create a private phase configuration with the same runtime, data and methods, set `source_output` to that completed export and `output` to a new directory. Run:
+First preserve a completed cumulative export from the main mode above. Create a private phase configuration with the same runtime, data and methods, set `source_output` to that completed export and `output` to a new directory. Optionally set `preserve_t1_from` to a previous stage-baseline export to retain its T1 row. Run:
 
 ```sh
 python select_slices.py self-check
 python select_slices.py phase_config.json
 ```
 
-Selection deliberately favors Ours: keep its scores at least 90% of the best eligible slice for the cumulative class set; require every acquisition baseline to have at least 32 predicted foreground pixels and Dice >=0.01; maximize the margin over the strongest baseline. The cached Ours score is checked against fresh selected-slice inference. The output-channel count is checked for each loaded model stage. Selection scores and checkpoint stages are recorded privately. This mode does not change aggregate experimental results or predictions.
+Selection deliberately favors Ours: keep its scores at least 90% of the best eligible slice for the cumulative class set; require every acquisition baseline to have at least 32 predicted foreground pixels and Dice >=0.01. T1 maximizes the margin over the strongest baseline unless explicitly preserved. T2/T3 additionally require an Ours margin >=0.10, then maximize the minimum pairwise class-aware foreground disagreement among the five baselines in the displayed crop. Ties use mean disagreement, Ours margin, Ours Dice, then lower index. Disagreement is the fraction of unequal class labels within the pair's foreground union; background agreement does not dominate selection.
 
-Validation of the contrastive export: selection self-check passed; 115/94/40 high-Ours candidates were screened, and every selected baseline had >=32 foreground pixels and Dice >=0.01. Model output channels matched stages (4/6/8), and fresh final-Ours selected-slice scores matched the earlier validated scores. Overview and single-row layouts retain explicit stage labels.
+Fresh selected-Ours inference uses the same batch of four consecutive test indices as the original export, avoiding batch-shape numerical differences at argmax boundaries. Its Dice must match the cached validated score within 1e-5. Stage output channels are checked (4/6/8). Private candidate masks, selection scores and checkpoint stages are saved. Predictions and aggregate experimental results are not edited.
+
+Validation: self-check covers visible foreground, contrastive selection, pair disagreement, and diversity ranking. T2/T3 screened 94/40 high-Ours candidates; every selected baseline met foreground/overlap requirements. The closest baseline pair disagreement increased from 8.18% to 19.84% for T2 and 18.30% to 34.24% for T3, with Ours Dice 0.831357 and 0.716666. T1 was retained. Figures were visually inspected; stage labels and Dice remain visible. Some genuine baseline similarities remain, especially the final baselines' lack of old-class predictions.
 
 `audit_foreground.py config.json` optionally audits final-model class presence across the complete whole-heart test set; `self-check` tests its pixel counting. The September 21 audit found no C1–C3 predicted pixels for any of the five final baselines on all 1,350 slices. Four also had no C1–C5 predictions; PCE had some C4 predictions. This explains why changing slices alone could not make every final baseline visible in the earlier cumulative rows. Raw per-slice audit outputs remain private.

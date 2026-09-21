@@ -169,7 +169,7 @@ def render(directory):
         fig.legend(handles=legend,loc='lower center',ncol=8,frameon=False,bbox_to_anchor=(.5,.035),fontsize=11)
         caption='Same final T3 model in every row | Cumulative 3 / 5 / 7 classes | Full argmax, then display filtering | Post-hoc best cases'
         if report.get('comparison_protocol')=='baselines_at_task_end_ours_final':
-            caption='Baselines: after each row task | Ours: final T3 | Post-hoc slices favoring Ours; nonempty baseline foreground required'
+            caption='Baselines: after each row task | Ours: final T3 | Selected for Ours advantage and baseline differences'
         fig.text(.5,.014,caption,ha='center',fontsize=10,color='#444444')
         fig.subplots_adjust(left=.055,right=.997,top=.91 if len(rows)>1 else .77,bottom=.135 if len(rows)>1 else .30,wspace=.045,hspace=.34)
         fig.savefig(out/(name+'.png'),dpi=180,facecolor='white')
