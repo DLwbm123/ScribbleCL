@@ -1,0 +1,138 @@
+{
+  "manifest": {
+    "backbone": "ZScribbleSeg_UNet",
+    "data_root": "<external_data>",
+    "epochs_per_task": 150,
+    "ewc_gamma": null,
+    "ewc_lambda": null,
+    "fisher_batches": null,
+    "history_images": false,
+    "ignore_index": -100,
+    "independent_scores": "independent_scores.json",
+    "main_entry": "main.py",
+    "max_train_batches": null,
+    "method": "pce-sequential",
+    "mib_kd_weight": null,
+    "pce_loss_weight": 1.0,
+    "replay": false,
+    "scenario": "domain",
+    "seed": 42,
+    "sparse_root": "<external_data>",
+    "task_count": 6,
+    "task_order": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ],
+    "test_for_selection": false,
+    "zs_adversarial_perturbation": false,
+    "zs_gd_loss": false,
+    "zs_global_weight": 0.0,
+    "zs_spatial_loss_weight": 0.0,
+    "zs_spatial_warmup_epochs": 60
+  },
+  "metrics": {
+    "definitions": {
+      "A-Dice": "mean of the final performance-matrix row",
+      "BWTR": "mean relative final-vs-acquisition change over A-E",
+      "E-FWT": "mean upper-triangle Dice improvement over same-seed random initialization",
+      "RMA": "mean acquisition Dice divided by independent PCE reference over B-F"
+    },
+    "independent_scores": [
+      0.43407726820433323,
+      0.4935047214921977,
+      0.6180966041584355,
+      0.4795303383318617,
+      0.5106082956260534,
+      0.6214504199407889
+    ],
+    "metrics": {
+      "A-Dice": 0.23706938696044358,
+      "BWTR": -0.5654285693682144,
+      "E-FWT": 0.09267886563199698,
+      "RMA": 0.7755127282476727
+    },
+    "performance_matrix": [
+      [
+        0.7037401729109044,
+        0.3731551600972145,
+        0.01405461076170401,
+        4.884093024912585e-10,
+        0.011626991308742571,
+        0.09777818104026297
+      ],
+      [
+        0.16751279286579557,
+        0.3556978464114617,
+        0.0805021242109864,
+        0.011618360695955933,
+        0.07127855507209818,
+        0.17111521598231658
+      ],
+      [
+        0.20912495656521188,
+        0.2677578516476041,
+        0.5474083204186926,
+        0.17563791661729278,
+        0.25001607707354884,
+        0.17378522673046143
+      ],
+      [
+        0.17304017117682005,
+        0.10982271465629893,
+        0.49762725703225025,
+        0.3166207413826483,
+        0.3417447479396224,
+        0.12399201310021046
+      ],
+      [
+        0.111092164020153,
+        0.029765723003896058,
+        0.33195400891185156,
+        0.22317709786236856,
+        0.4683858420720697,
+        0.06351351464415884
+      ],
+      [
+        0.20871711987888852,
+        0.33423015144828677,
+        0.3060149059148476,
+        0.07185060167511573,
+        0.07057345485601207,
+        0.43103008798951087
+      ]
+    ],
+    "random_scores": [
+      0.03141959549167518,
+      0.0347353791269713,
+      0.05408777981420955,
+      0.031152977831189862,
+      0.06053294613758443,
+      0.018226810896746506
+    ]
+  },
+  "reference_manifest": {
+    "backbone": "ZScribbleSeg_UNet",
+    "data_root": "<external_data>",
+    "epochs_per_task": 150,
+    "history_images": false,
+    "main_entry": "main.py",
+    "mode": "independent_pce_references",
+    "replay": false,
+    "scenario": "domain",
+    "seed": 42,
+    "sparse_root": "<external_data>",
+    "status": "complete",
+    "task_order": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+    ]
+  }
+}

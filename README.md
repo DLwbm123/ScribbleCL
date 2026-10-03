@@ -15,6 +15,7 @@ remain beside them to expose segmentation failures hidden by easy background.
 
 The public package contains the latest retained Domain results:
 
+- PCE-Sequential with [all four metrics reevaluated including background](reports/domain_pce_inclusive_20261003.md)
 - Domain-CL with ZS-GPM
 - Domain-CL with ZS-DER++
 - canonical five-epoch ZS-Joint convergence diagnostic

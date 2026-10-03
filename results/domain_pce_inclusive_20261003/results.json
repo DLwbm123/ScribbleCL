@@ -1,0 +1,634 @@
+{
+  "aggregation": "equal patient mean, equal class mean, equal task mean",
+  "checkpoint_selection": "preserved original checkpoints; no reselection",
+  "classes": [
+    0,
+    1
+  ],
+  "dice_includes_background": true,
+  "evaluated_task_count": 48,
+  "evaluations": [
+    {
+      "source": "random_seed42",
+      "tasks": [
+        {
+          "background": 0.15353956262398574,
+          "foreground": 0.03141959549167518,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.09247957905783047,
+          "patients": 3,
+          "slices": 126,
+          "task": "A"
+        },
+        {
+          "background": 0.3397050796009197,
+          "foreground": 0.0347353791269713,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.1872202293639455,
+          "patients": 3,
+          "slices": 72,
+          "task": "B"
+        },
+        {
+          "background": 0.3299744639824612,
+          "foreground": 0.05408777981420955,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.19203112189833538,
+          "patients": 8,
+          "slices": 158,
+          "task": "C"
+        },
+        {
+          "background": 0.34286296067218286,
+          "foreground": 0.031152977831189862,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.18700796925168636,
+          "patients": 4,
+          "slices": 100,
+          "task": "D"
+        },
+        {
+          "background": 0.39772328862014683,
+          "foreground": 0.06053294613758443,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.22912811737886563,
+          "patients": 8,
+          "slices": 254,
+          "task": "E"
+        },
+        {
+          "background": 0.3744841702082374,
+          "foreground": 0.018226810896746506,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.19635549055249193,
+          "patients": 5,
+          "slices": 320,
+          "task": "F"
+        }
+      ]
+    },
+    {
+      "source": "x7p2a/s01.pt",
+      "tasks": [
+        {
+          "background": 0.9954870333538959,
+          "foreground": 0.7037401729109044,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.8496136031324002,
+          "patients": 3,
+          "slices": 126,
+          "task": "A"
+        },
+        {
+          "background": 0.9928203914714587,
+          "foreground": 0.3731551600972145,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.6829877757843366,
+          "patients": 3,
+          "slices": 72,
+          "task": "B"
+        },
+        {
+          "background": 0.9880077314413669,
+          "foreground": 0.01405461076170401,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5010311711015355,
+          "patients": 8,
+          "slices": 158,
+          "task": "C"
+        },
+        {
+          "background": 0.9935003279239482,
+          "foreground": 4.884093024912585e-10,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.49675016420617873,
+          "patients": 4,
+          "slices": 100,
+          "task": "D"
+        },
+        {
+          "background": 0.9870093013189292,
+          "foreground": 0.011626991308742571,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.49931814631383586,
+          "patients": 8,
+          "slices": 254,
+          "task": "E"
+        },
+        {
+          "background": 0.994908766615265,
+          "foreground": 0.09777818104026297,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5463434738277639,
+          "patients": 5,
+          "slices": 320,
+          "task": "F"
+        }
+      ]
+    },
+    {
+      "source": "x7p2a/s02.pt",
+      "tasks": [
+        {
+          "background": 0.9222728679331328,
+          "foreground": 0.16751279286579557,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5448928303994642,
+          "patients": 3,
+          "slices": 126,
+          "task": "A"
+        },
+        {
+          "background": 0.9734292840815627,
+          "foreground": 0.3556978464114617,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.6645635652465122,
+          "patients": 3,
+          "slices": 72,
+          "task": "B"
+        },
+        {
+          "background": 0.9722278983854475,
+          "foreground": 0.0805021242109864,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.526365011298217,
+          "patients": 8,
+          "slices": 158,
+          "task": "C"
+        },
+        {
+          "background": 0.9746373153115406,
+          "foreground": 0.011618360695955933,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.49312783800374826,
+          "patients": 4,
+          "slices": 100,
+          "task": "D"
+        },
+        {
+          "background": 0.957648813363401,
+          "foreground": 0.07127855507209818,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5144636842177496,
+          "patients": 8,
+          "slices": 254,
+          "task": "E"
+        },
+        {
+          "background": 0.9716243543968398,
+          "foreground": 0.17111521598231658,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5713697851895781,
+          "patients": 5,
+          "slices": 320,
+          "task": "F"
+        }
+      ]
+    },
+    {
+      "source": "x7p2a/s03.pt",
+      "tasks": [
+        {
+          "background": 0.9321574637888262,
+          "foreground": 0.20912495656521188,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5706412101770191,
+          "patients": 3,
+          "slices": 126,
+          "task": "A"
+        },
+        {
+          "background": 0.9616435353509147,
+          "foreground": 0.2677578516476041,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.6147006934992594,
+          "patients": 3,
+          "slices": 72,
+          "task": "B"
+        },
+        {
+          "background": 0.9845944498991104,
+          "foreground": 0.5474083204186927,
+          "foreground_abs_error": 1.1102230246251565e-16,
+          "inclusive": 0.7660013851589016,
+          "patients": 8,
+          "slices": 158,
+          "task": "C"
+        },
+        {
+          "background": 0.9791015607332879,
+          "foreground": 0.17563791661729278,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5773697386752903,
+          "patients": 4,
+          "slices": 100,
+          "task": "D"
+        },
+        {
+          "background": 0.9809341751258376,
+          "foreground": 0.25001607707354884,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.6154751260996932,
+          "patients": 8,
+          "slices": 254,
+          "task": "E"
+        },
+        {
+          "background": 0.9543519501642477,
+          "foreground": 0.17378522673046143,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5640685884473545,
+          "patients": 5,
+          "slices": 320,
+          "task": "F"
+        }
+      ]
+    },
+    {
+      "source": "x7p2a/s04.pt",
+      "tasks": [
+        {
+          "background": 0.94767374938397,
+          "foreground": 0.17304017117682005,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5603569602803951,
+          "patients": 3,
+          "slices": 126,
+          "task": "A"
+        },
+        {
+          "background": 0.9683300361127438,
+          "foreground": 0.10982271465629893,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5390763753845214,
+          "patients": 3,
+          "slices": 72,
+          "task": "B"
+        },
+        {
+          "background": 0.9860624073499594,
+          "foreground": 0.49762725703225025,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.7418448321911049,
+          "patients": 8,
+          "slices": 158,
+          "task": "C"
+        },
+        {
+          "background": 0.9905063240618042,
+          "foreground": 0.3166207413826483,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.6535635327222262,
+          "patients": 4,
+          "slices": 100,
+          "task": "D"
+        },
+        {
+          "background": 0.98772025849375,
+          "foreground": 0.34174474793962245,
+          "foreground_abs_error": 5.551115123125783e-17,
+          "inclusive": 0.6647325032166862,
+          "patients": 8,
+          "slices": 254,
+          "task": "E"
+        },
+        {
+          "background": 0.975669688768221,
+          "foreground": 0.12399201310021046,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5498308509342158,
+          "patients": 5,
+          "slices": 320,
+          "task": "F"
+        }
+      ]
+    },
+    {
+      "source": "x7p2a/s05.pt",
+      "tasks": [
+        {
+          "background": 0.7409357296984913,
+          "foreground": 0.111092164020153,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.42601394685932215,
+          "patients": 3,
+          "slices": 126,
+          "task": "A"
+        },
+        {
+          "background": 0.8312120989941888,
+          "foreground": 0.029765723003896058,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.4304889109990424,
+          "patients": 3,
+          "slices": 72,
+          "task": "B"
+        },
+        {
+          "background": 0.929223372647738,
+          "foreground": 0.3319540089118515,
+          "foreground_abs_error": 5.551115123125783e-17,
+          "inclusive": 0.6305886907797947,
+          "patients": 8,
+          "slices": 158,
+          "task": "C"
+        },
+        {
+          "background": 0.9613245898576416,
+          "foreground": 0.22317709786236856,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.592250843860005,
+          "patients": 4,
+          "slices": 100,
+          "task": "D"
+        },
+        {
+          "background": 0.9856609234339363,
+          "foreground": 0.4683858420720697,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.727023382753003,
+          "patients": 8,
+          "slices": 254,
+          "task": "E"
+        },
+        {
+          "background": 0.9028176096663273,
+          "foreground": 0.06351351464415884,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.4831655621552431,
+          "patients": 5,
+          "slices": 320,
+          "task": "F"
+        }
+      ]
+    },
+    {
+      "source": "x7p2a/s06.pt",
+      "tasks": [
+        {
+          "background": 0.9547342679220541,
+          "foreground": 0.20871711987888852,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5817256939004714,
+          "patients": 3,
+          "slices": 126,
+          "task": "A"
+        },
+        {
+          "background": 0.9745303046986779,
+          "foreground": 0.33423015144828677,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.6543802280734823,
+          "patients": 3,
+          "slices": 72,
+          "task": "B"
+        },
+        {
+          "background": 0.9825635254900666,
+          "foreground": 0.3060149059148476,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.6442892157024571,
+          "patients": 8,
+          "slices": 158,
+          "task": "C"
+        },
+        {
+          "background": 0.9881823411785399,
+          "foreground": 0.07185060167511573,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5300164714268278,
+          "patients": 4,
+          "slices": 100,
+          "task": "D"
+        },
+        {
+          "background": 0.9776215924922288,
+          "foreground": 0.07057345485601207,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.5240975236741204,
+          "patients": 8,
+          "slices": 254,
+          "task": "E"
+        },
+        {
+          "background": 0.9877137132072867,
+          "foreground": 0.43103008798951087,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.7093719005983988,
+          "patients": 5,
+          "slices": 320,
+          "task": "F"
+        }
+      ]
+    },
+    {
+      "source": "x7p2r/s01.pt",
+      "tasks": [
+        {
+          "background": 0.9799595121186727,
+          "foreground": 0.43407726820433323,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.707018390161503,
+          "patients": 3,
+          "slices": 126,
+          "task": "A"
+        }
+      ]
+    },
+    {
+      "source": "x7p2r/s02.pt",
+      "tasks": [
+        {
+          "background": 0.9854503006199277,
+          "foreground": 0.4935047214921977,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.7394775110560627,
+          "patients": 3,
+          "slices": 72,
+          "task": "B"
+        }
+      ]
+    },
+    {
+      "source": "x7p2r/s03.pt",
+      "tasks": [
+        {
+          "background": 0.9883174523654621,
+          "foreground": 0.6180966041584354,
+          "foreground_abs_error": 1.1102230246251565e-16,
+          "inclusive": 0.8032070282619488,
+          "patients": 8,
+          "slices": 158,
+          "task": "C"
+        }
+      ]
+    },
+    {
+      "source": "x7p2r/s04.pt",
+      "tasks": [
+        {
+          "background": 0.9899649241992419,
+          "foreground": 0.4795303383318617,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.7347476312655518,
+          "patients": 4,
+          "slices": 100,
+          "task": "D"
+        }
+      ]
+    },
+    {
+      "source": "x7p2r/s05.pt",
+      "tasks": [
+        {
+          "background": 0.9897293659970823,
+          "foreground": 0.5106082956260535,
+          "foreground_abs_error": 1.1102230246251565e-16,
+          "inclusive": 0.7501688308115679,
+          "patients": 8,
+          "slices": 254,
+          "task": "E"
+        }
+      ]
+    },
+    {
+      "source": "x7p2r/s06.pt",
+      "tasks": [
+        {
+          "background": 0.9960402813206816,
+          "foreground": 0.6214504199407889,
+          "foreground_abs_error": 0.0,
+          "inclusive": 0.8087453506307352,
+          "patients": 5,
+          "slices": 320,
+          "task": "F"
+        }
+      ]
+    }
+  ],
+  "finished_at": 1791002975.2282917,
+  "foreground_parity_passed": true,
+  "gpu_peak_mib": 1062.0,
+  "matrices": {
+    "foreground": [
+      [
+        0.7037401729109044,
+        0.3731551600972145,
+        0.01405461076170401,
+        4.884093024912585e-10,
+        0.011626991308742571,
+        0.09777818104026297
+      ],
+      [
+        0.16751279286579557,
+        0.3556978464114617,
+        0.0805021242109864,
+        0.011618360695955933,
+        0.07127855507209818,
+        0.17111521598231658
+      ],
+      [
+        0.20912495656521188,
+        0.2677578516476041,
+        0.5474083204186927,
+        0.17563791661729278,
+        0.25001607707354884,
+        0.17378522673046143
+      ],
+      [
+        0.17304017117682005,
+        0.10982271465629893,
+        0.49762725703225025,
+        0.3166207413826483,
+        0.34174474793962245,
+        0.12399201310021046
+      ],
+      [
+        0.111092164020153,
+        0.029765723003896058,
+        0.3319540089118515,
+        0.22317709786236856,
+        0.4683858420720697,
+        0.06351351464415884
+      ],
+      [
+        0.20871711987888852,
+        0.33423015144828677,
+        0.3060149059148476,
+        0.07185060167511573,
+        0.07057345485601207,
+        0.43103008798951087
+      ]
+    ],
+    "inclusive": [
+      [
+        0.8496136031324002,
+        0.6829877757843366,
+        0.5010311711015355,
+        0.49675016420617873,
+        0.49931814631383586,
+        0.5463434738277639
+      ],
+      [
+        0.5448928303994642,
+        0.6645635652465122,
+        0.526365011298217,
+        0.49312783800374826,
+        0.5144636842177496,
+        0.5713697851895781
+      ],
+      [
+        0.5706412101770191,
+        0.6147006934992594,
+        0.7660013851589016,
+        0.5773697386752903,
+        0.6154751260996932,
+        0.5640685884473545
+      ],
+      [
+        0.5603569602803951,
+        0.5390763753845214,
+        0.7418448321911049,
+        0.6535635327222262,
+        0.6647325032166862,
+        0.5498308509342158
+      ],
+      [
+        0.42601394685932215,
+        0.4304889109990424,
+        0.6305886907797947,
+        0.592250843860005,
+        0.727023382753003,
+        0.4831655621552431
+      ],
+      [
+        0.5817256939004714,
+        0.6543802280734823,
+        0.6442892157024571,
+        0.5300164714268278,
+        0.5240975236741204,
+        0.7093719005983988
+      ]
+    ]
+  },
+  "metrics": {
+    "foreground": {
+      "A-Dice": 0.23706938696044358,
+      "BWTR": -0.5654285693682144,
+      "E-FWT": 0.09267886563199698,
+      "RMA": 0.7755127282476726
+    },
+    "inclusive": {
+      "A-Dice": 0.6073135055626263,
+      "BWTR": -0.19153531991164163,
+      "E-FWT": 0.35038687441852195,
+      "RMA": 0.9176304608690004
+    }
+  },
+  "reference_run": "x7p2r",
+  "seed": 42,
+  "source_run": "x7p2a",
+  "split": "test",
+  "started_at": 1791002399.8392982,
+  "status": "complete"
+}
